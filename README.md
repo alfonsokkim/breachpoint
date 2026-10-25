@@ -18,7 +18,7 @@ Implement the required features described in the [assignment specification](http
 
 - A C++ CMake project using OpenGL 3.3 core, GLFW, GLAD 2 (on Windows/Linux) and GLM.
 - A  minimal 3D example mesh (tetrahedron) with a fixed transform and colour.
-- A start screen titled "Simple Voxel Game" with a pulsing "PRESS THE ENTER KEY" prompt (see [Start screen](#start-screen)).
+- A plain black start screen with "Night Shift" and a static "Press Enter to start" prompt (see [Start screen](#start-screen)).
 - Reusable 2D helpers: `Texture` (loads a PNG with stb_image into an OpenGL texture) and `TextRenderer` (draws bitmap-font text and solid rectangles in screen pixels using `assets/textures/font.png`). You can reuse them for your own HUD, such as a  hotbar.
 - One compact Dear ImGui window composed from a course-provided benchmark and custom widgets for the example in `src/app/CustomUi.cpp`, you may add your own assignment-specific controls to `CustomUi` to make it easier to develop and debug.
 
@@ -40,7 +40,7 @@ tests/              Optional Catch2 self-tests
 ```
 
 Add implementation files to `src/CMakeLists.txt`. Use
-`craft::core::assetPath(...)` in `main.cpp` to add GLSL shaders. 
+`craft::core::assetPath(...)` in `main.cpp` to add GLSL shaders.
 
 ## Build with CMake and test with CTest directly
 
@@ -66,28 +66,22 @@ After a successful build, the executable is `build/Craft` on macOS/Linux and
 
 `TitleScreen` (`src/app/TitleScreen.cpp`) is shown when the application starts, before the tetrahedron scene and the Dear ImGui window:
 
-- A pixel-art background image, `assets/textures/title_background.png`, with "Simple Voxel Game" fading in over it. The text is drawn with `assets/textures/font.png` through `TextRenderer`.
-- "PRESS THE ENTER KEY" appears below the title and pulses slowly.
-- Pressing **Enter** (or keypad Enter) hides the prompt immediately, holds the screen for 0.3 seconds, then fades to black over 0.6 seconds before the game starts. **ESC** still closes the window at any time.
+- A plain black background with a white "Night Shift" title and a smaller grey "Press Enter to start" prompt. The text is drawn with `assets/textures/font.png` through `TextRenderer`.
+- Both lines are visible immediately and stay still.
+- Pressing **Enter** (or keypad Enter) starts the scene immediately. **Esc** closes the window at any time.
 
-The current image (272×153, 16:9) is built from the [Mountain at Dusk Background](https://opengameart.org/content/mountain-at-dusk-background) parallax layers.  Text, timings and layout are constants at the top of `TitleScreen.cpp`.  And, `main.cpp` stops drawing the start screen and releases its GPU resources once `TitleScreen::finished()` returns true.
+`main.cpp` releases the title screen's GPU resources once `TitleScreen::finished()` returns true. The start screen does not load the starter background image or its shaders.
 
 ### Changing the Start Screen
 
-To use a different cover image, replace `assets/textures/title_background.png` with another PNG of the same name and rebuild (the build copies `assets/` next to the executable). No shader or code changes are needed:
-
-- Any aspect ratio works, but 16:9 or 4:3 fit best. The image fills the window without stretching; whatever does not fit is cropped evenly from the centre.
-- Small pixel-art images are scaled up with nearest-neighbour filtering, so their pixels stay sharp. Large images are scaled down smoothly.
-- If the new image is bright where the text sits, adjust `kTitleCentreY` and `kPromptCentreY` in `TitleScreen.cpp` to move the title and prompt.
-
-If you want to change the title and prompt text, edit `kTitle` and `kPrompt` in `TitleScreen.cpp`. To resize the text, change `kDefaultTitleSize` and `kDefaultPromptSize` (the height of one font cell as a fraction of the window height; defaults 0.15 and 0.042), or call `TitleScreen::setTextSizes(titleSize, promptSize)` at runtime. Either line is still shrunk automatically if it would be wider than `kTitleMaxWidth` / `kPromptMaxWidth` of the window.
+Edit `kTitle` and `kPrompt` in `src/app/TitleScreen.cpp` to change the text. Change the `glClearColor` call to use another solid background colour. Use `TitleScreen::setTextSizes(titleSize, promptSize)` to adjust font cell heights as fractions of window height (defaults 0.12 and 0.04). Both lines shrink to fit 85% of the window width.
 
 ## 240-frame benchmark
 
 `AppUi` owns the shared Dear ImGui lifecycle and the course-provided benchmark
 section. `CustomUi` remains the separate extension point where students may add
 assignment-specific controls; the starter version only rotates or recolours the
-disposable example object and exposes no camera controls or camera state. 
+disposable example object and exposes no camera controls or camera state.
 
 Keep the code that renders your scene inside the benchmark region, between
 `SceneBenchmark::beginSceneFrame()` and `SceneBenchmark::endSceneFrame()`.
@@ -123,7 +117,7 @@ int main() {
 Use the **Run benchmark** button, or start an automatic run from a terminal:
 
 ```bash
-CRAFT_BENCHMARK=1 ./build/Craft     
+CRAFT_BENCHMARK=1 ./build/Craft
 ```
 
 The start screen is **skipped** for the environment-triggered run (`CRAFT_BENCHMARK=1`), so the benchmark starts immediately and never waits for Enter. The start screen is also not part of the measured region: it is drawn before the scene, and the **Run benchmark** button only becomes available after you have pressed Enter.
