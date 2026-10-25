@@ -69,7 +69,7 @@ glm::mat4 exampleModelMatrix(const craft::app::CustomObjectControls& controls) {
 int main() {
   try {
     craft::graphics::Window window(kInitialWidth, kInitialHeight,
-                                   "Night Shift");
+                                   "Breachpoint");
     craft::graphics::Shader shader(
         craft::core::assetPath("shaders/basic.vert"),
         craft::core::assetPath("shaders/basic.frag"));

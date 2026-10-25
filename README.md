@@ -18,7 +18,7 @@ Implement the required features described in the [assignment specification](http
 
 - A C++ CMake project using OpenGL 3.3 core, GLFW, GLAD 2 (on Windows/Linux) and GLM.
 - A  minimal 3D example mesh (tetrahedron) with a fixed transform and colour.
-- A plain black start screen with "Night Shift" and a static "Press Enter to start" prompt (see [Start screen](#start-screen)).
+- A plain black start screen with "Breachpoint" and a static "Press Enter to start" prompt (see [Start screen](#start-screen)).
 - Reusable 2D helpers: `Texture` (loads a PNG with stb_image into an OpenGL texture) and `TextRenderer` (draws bitmap-font text and solid rectangles in screen pixels using `assets/textures/font.png`). You can reuse them for your own HUD, such as a  hotbar.
 - One compact Dear ImGui window composed from a course-provided benchmark and custom widgets for the example in `src/app/CustomUi.cpp`, you may add your own assignment-specific controls to `CustomUi` to make it easier to develop and debug.
 
@@ -66,7 +66,7 @@ After a successful build, the executable is `build/Craft` on macOS/Linux and
 
 `TitleScreen` (`src/app/TitleScreen.cpp`) is shown when the application starts, before the tetrahedron scene and the Dear ImGui window:
 
-- A plain black background with a white "Night Shift" title and a smaller grey "Press Enter to start" prompt. The text is drawn with `assets/textures/font.png` through `TextRenderer`.
+- A plain black background with a white "Breachpoint" title and a smaller grey "Press Enter to start" prompt. The text is drawn with `assets/textures/font.png` through `TextRenderer`.
 - Both lines are visible immediately and stay still.
 - Pressing **Enter** (or keypad Enter) starts the scene immediately. **Esc** closes the window at any time.
 

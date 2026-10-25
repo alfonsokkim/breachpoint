@@ -16,7 +16,7 @@ namespace craft::app {
 
 namespace {
 
-constexpr std::string_view kTitle = "Night Shift";
+constexpr std::string_view kTitle = "Breachpoint";
 constexpr std::string_view kPrompt = "Press Enter to start";
 constexpr float kLetterSpacing = 0.08F;
 
