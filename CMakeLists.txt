@@ -64,11 +64,12 @@ FetchContent_MakeAvailable(imgui)
 # stb: image decoding and image-file writing.
 # The upstream repository does not define a CMake target, so expose its
 # single-header libraries through a small interface target.
+if(POLICY CMP0135)
+    cmake_policy(SET CMP0135 NEW)
+endif()
 FetchContent_Declare(
     stb
-    GIT_REPOSITORY https://github.com/nothings/stb.git
-    GIT_TAG 2c980bb59875b0d32144a71867fbdebb2f77cd20
-    GIT_SHALLOW TRUE
+    URL https://github.com/nothings/stb/archive/2c980bb59875b0d32144a71867fbdebb2f77cd20.tar.gz
 )
 FetchContent_MakeAvailable(stb)
 
