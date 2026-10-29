@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1820" viewBox="0 0 1200 1820" role="img" aria-labelledby="flow-title flow-description">
   <title id="flow-title">Breachpoint: Two-Person Task Flow</title>
-  <desc id="flow-description">Alfonso owns camera, shooting, lighting, particles and benchmarking, plus the optional hip-fire laser sight. Jubby owns the world, game state, targets, counterfire and BRDF materials, plus optional night vision. Both streams join for integration and delivery.</desc>
+  <desc id="flow-description">Alfonso owns camera, shooting, lighting, particles and benchmarking, plus the optional hip-fire laser sight. Jason owns the world, game state, targets, counterfire and BRDF materials, plus optional night vision. Both streams join for integration and delivery.</desc>
   <defs>
     <style>
       .title { font: 700 30px Arial, sans-serif; fill: #181818; }
@@ -73,7 +73,7 @@
   <path d="M450 280 H480" class="connector"/>
 
   <rect x="750" y="212" width="395" height="136" fill="#bfeaf2" class="box"/>
-  <text x="948" y="240" text-anchor="middle" class="owner">JUBBY</text>
+  <text x="948" y="240" text-anchor="middle" class="owner">JASON</text>
   <text x="948" y="270" text-anchor="middle" class="task">J1: Voxel world + level API</text>
   <text x="948" y="296" text-anchor="middle" class="task">J2: Game state + HUD skeleton</text>
   <text x="948" y="323" text-anchor="middle" class="note">World storage, health, timer and reset state</text>
@@ -88,7 +88,7 @@
   <path d="M450 520 H480" class="connector"/>
 
   <rect x="750" y="452" width="395" height="136" fill="#bfeaf2" class="box"/>
-  <text x="948" y="480" text-anchor="middle" class="owner">JUBBY</text>
+  <text x="948" y="480" text-anchor="middle" class="owner">JASON</text>
   <text x="948" y="510" text-anchor="middle" class="task">J3: Target hierarchy + animation</text>
   <text x="948" y="536" text-anchor="middle" class="task">J4: Levels + reset flow</text>
   <text x="948" y="563" text-anchor="middle" class="note">Hostiles, civilians, level switching and restart</text>
@@ -103,7 +103,7 @@
   <path d="M450 760 H480" class="connector"/>
 
   <rect x="750" y="692" width="395" height="136" fill="#bfeaf2" class="box"/>
-  <text x="948" y="720" text-anchor="middle" class="owner">JUBBY</text>
+  <text x="948" y="720" text-anchor="middle" class="owner">JASON</text>
   <text x="948" y="750" text-anchor="middle" class="task">J5: Enemy LOS exposure + damage</text>
   <text x="948" y="778" text-anchor="middle" class="note">Visible timer, repeated damage pulses</text>
   <text x="948" y="803" text-anchor="middle" class="note">Breaking line of sight resets exposure</text>
@@ -118,7 +118,7 @@
   <path d="M450 1000 H480" class="connector"/>
 
   <rect x="750" y="932" width="395" height="136" fill="#bfeaf2" class="box"/>
-  <text x="948" y="960" text-anchor="middle" class="owner">JUBBY</text>
+  <text x="948" y="960" text-anchor="middle" class="owner">JASON</text>
   <text x="948" y="990" text-anchor="middle" class="task">J6: BRDF controls + textures</text>
   <text x="948" y="1016" text-anchor="middle" class="task">J7: Gameplay validation</text>
   <text x="948" y="1043" text-anchor="middle" class="note">Levels, HUD, reset and damage rules</text>
@@ -135,7 +135,7 @@
   <path d="M450 1250 H480" class="connector"/>
 
   <rect x="750" y="1162" width="395" height="174" fill="#bfeaf2" class="box"/>
-  <text x="948" y="1190" text-anchor="middle" class="owner">JUBBY</text>
+  <text x="948" y="1190" text-anchor="middle" class="owner">JASON</text>
   <text x="948" y="1220" text-anchor="middle" class="task">J8: Night vision</text>
   <text x="948" y="1250" text-anchor="middle" class="note">N: toggle grainy night vision</text>
   <text x="948" y="1276" text-anchor="middle" class="note">Green tint and boosted visibility</text>
@@ -161,7 +161,7 @@
   <rect x="270" y="1770" width="24" height="24" fill="#fff1a8" class="box"/>
   <text x="306" y="1788" class="note">Alfonso-owned stream</text>
   <rect x="510" y="1770" width="24" height="24" fill="#bfeaf2" class="box"/>
-  <text x="546" y="1788" class="note">Jubby-owned stream</text>
+  <text x="546" y="1788" class="note">Jason-owned stream</text>
   <rect x="750" y="1770" width="24" height="24" fill="#cdeccf" class="box"/>
   <text x="786" y="1788" class="note">Shared delivery</text>
 </svg>
