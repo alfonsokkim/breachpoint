@@ -19,12 +19,13 @@ class AppUi {
   AppUi(const AppUi&) = delete;
   AppUi& operator=(const AppUi&) = delete;
 
-  void beginFrame();
+  void beginFrame(bool mouseCaptured);
   // Returns true when the course-provided benchmark section requests a run.
   [[nodiscard]] bool draw(const BenchmarkSnapshot& benchmark);
   void render();
 
-  [[nodiscard]] const CustomObjectControls& objectControls() const noexcept;
+  void setDiagnostics(const CameraDiagnostics& diagnostics);
+  [[nodiscard]] bool wantsKeyboardInput() const;
 
  private:
   [[nodiscard]] bool drawBenchmarkSection(

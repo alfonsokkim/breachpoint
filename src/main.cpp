@@ -1,17 +1,20 @@
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <optional>
 
-#include <glm/ext/matrix_clip_space.hpp>
-#include <glm/ext/matrix_transform.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/trigonometric.hpp>
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+
 #include <glm/vec3.hpp>
 
 #include "app/AppUi.h"
+#include "app/CameraController.h"
 #include "app/SceneBenchmark.h"
 #include "app/TitleScreen.h"
 #include "core/AssetPath.h"
+#include "core/Camera.h"
+#include "core/SpatialQueries.h"
 #include "graphics/Example3DMesh.h"
 #include "graphics/OpenGL.h"
 #include "graphics/Shader.h"
@@ -24,7 +27,11 @@ constexpr int kInitialHeight = 720;
 constexpr const char* kStarterWorkload = "starter-3d-tetrahedron";
 
 void startBenchmark(craft::graphics::Window& window,
-                    craft::app::SceneBenchmark& benchmark) {
+                    craft::app::SceneBenchmark& benchmark,
+                    craft::core::Camera& camera,
+                    craft::app::CameraController& controller) {
+  controller.releaseMouse();
+  camera = craft::core::Camera{};
   window.setFramebufferSize(craft::app::kBenchmarkFramebufferWidth,
                             craft::app::kBenchmarkFramebufferHeight);
   window.setVSync(false);
@@ -43,27 +50,6 @@ void printBenchmarkResult(const craft::app::BenchmarkSnapshot& result,
                "between the beginSceneFrame and endSceneFrame calls\n";
 }
 
-glm::mat4 fixedStarterViewProjection(int framebufferWidth,
-                                     int framebufferHeight) {
-  const float aspect = static_cast<float>(framebufferWidth) /
-                       static_cast<float>(framebufferHeight);
-  const glm::mat4 projection =
-      glm::perspective(glm::radians(55.0F), aspect, 0.1F, 100.0F);
-  const glm::mat4 view =
-      glm::lookAt(glm::vec3(2.4F, 1.8F, 3.0F), glm::vec3(0.0F),
-                  glm::vec3(0.0F, 1.0F, 0.0F));
-  return projection * view;
-}
-
-glm::mat4 exampleModelMatrix(const craft::app::CustomObjectControls& controls) {
-  glm::mat4 model(1.0F);
-  model = glm::rotate(model, glm::radians(controls.rotationDegrees[0]),
-                      glm::vec3(1.0F, 0.0F, 0.0F));
-  model = glm::rotate(model, glm::radians(controls.rotationDegrees[1]),
-                      glm::vec3(0.0F, 1.0F, 0.0F));
-  return model;
-}
-
 }  // namespace
 
 int main() {
@@ -74,13 +60,17 @@ int main() {
         craft::core::assetPath("shaders/basic.vert"),
         craft::core::assetPath("shaders/basic.frag"));
     const craft::graphics::Example3DMesh exampleMesh;
+    craft::core::Camera camera;
+    craft::app::CameraController controller(window, camera);
     craft::app::AppUi appUi(window);
     craft::app::SceneBenchmark benchmark;
+    const std::vector<craft::core::Aabb> exampleBounds{
+        {{-0.75F, -0.6F, -0.75F}, {0.75F, 0.8F, 0.55F}}};
 
     const bool commandLineBenchmark =
         craft::app::benchmarkRequestedFromEnvironment();
     if (commandLineBenchmark) {
-      startBenchmark(window, benchmark);
+      startBenchmark(window, benchmark, camera, controller);
     }
 
     // The start screen is skipped when benchmarking from the command line.
@@ -90,12 +80,23 @@ int main() {
     }
 
     glEnable(GL_DEPTH_TEST);
+    double previousTime = glfwGetTime();
 
     while (!window.shouldClose()) {
       window.pollEvents();
+      const double now = glfwGetTime();
+      const float deltaSeconds = static_cast<float>(
+          std::clamp(now - previousTime, 0.0, 0.1));
+      previousTime = now;
+      if (glfwGetWindowAttrib(window.nativeHandle(), GLFW_ICONIFIED)) {
+        controller.releaseMouse();
+        window.swapBuffers();
+        continue;
+      }
 
       auto [framebufferWidth, framebufferHeight] = window.framebufferSize();
       if (framebufferWidth == 0 || framebufferHeight == 0) {
+        controller.releaseMouse();
         window.swapBuffers();
         continue;
       }
@@ -111,10 +112,17 @@ int main() {
         titleScreen.reset();
       }
 
-      appUi.beginFrame();
       const auto benchmarkState = benchmark.snapshot();
+      controller.update(deltaSeconds, !benchmarkState.running,
+                         appUi.wantsKeyboardInput());
+      appUi.beginFrame(controller.mouseCaptured());
+      const auto hit = craft::core::nearestBoxHit(camera.ray(), exampleBounds);
+      appUi.setDiagnostics({camera.position(), camera.forward(),
+                            camera.yawDegrees(), camera.pitchDegrees(),
+                            controller.mouseCaptured(),
+                            hit ? std::optional<float>(hit->t) : std::nullopt});
       if (appUi.draw(benchmarkState) && !benchmarkState.running) {
-        startBenchmark(window, benchmark);
+        startBenchmark(window, benchmark, camera, controller);
         const auto resizedFramebuffer = window.framebufferSize();
         framebufferWidth = resizedFramebuffer.first;
         framebufferHeight = resizedFramebuffer.second;
@@ -127,13 +135,10 @@ int main() {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
       shader.use();
-      const auto& objectControls = appUi.objectControls();
-      shader.setMat4("uMvp", fixedStarterViewProjection(framebufferWidth,
-                                                        framebufferHeight) *
-                                 exampleModelMatrix(objectControls));
-      shader.setVec3("uTint", glm::vec3(objectControls.colourTint[0],
-                                        objectControls.colourTint[1],
-                                        objectControls.colourTint[2]));
+      const float aspect = static_cast<float>(framebufferWidth) /
+                           static_cast<float>(framebufferHeight);
+      shader.setMat4("uMvp", camera.viewProjection(aspect));
+      shader.setVec3("uTint", glm::vec3(1.0F));
       exampleMesh.draw();
 
       const bool benchmarkCompleted = benchmark.endSceneFrame();

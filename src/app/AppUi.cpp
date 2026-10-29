@@ -32,7 +32,13 @@ AppUi::~AppUi() {
   ImGui::DestroyContext();
 }
 
-void AppUi::beginFrame() {
+void AppUi::beginFrame(bool mouseCaptured) {
+  auto& io = ImGui::GetIO();
+  if (mouseCaptured) {
+    io.ConfigFlags |= ImGuiConfigFlags_NoMouse;
+  } else {
+    io.ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
+  }
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
@@ -58,8 +64,12 @@ void AppUi::render() {
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-const CustomObjectControls& AppUi::objectControls() const noexcept {
-  return customUi_.objectControls();
+void AppUi::setDiagnostics(const CameraDiagnostics& diagnostics) {
+  customUi_.setDiagnostics(diagnostics);
+}
+
+bool AppUi::wantsKeyboardInput() const {
+  return ImGui::GetIO().WantCaptureKeyboard;
 }
 
 bool AppUi::drawBenchmarkSection(const BenchmarkSnapshot& benchmark) const {

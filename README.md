@@ -4,7 +4,7 @@
 
 The codebase is the starter code for the COMP3421/COMP9415 26T3 Computer Graphics group assignment, which requires students to implement a simple Minecraft-style voxel game. You can find the assignment specification in [Group Assignment Specification repo](https://gitlab.cse.unsw.edu.au/coursework/COMP3421/26T3/group-assignment-spec).
 
-The starter code is designed to be a minimal, working 3D OpenGL application that students can build upon. It opens an OpenGL 3.3 window, shows a start screen, and then renders one fixed, coloured tetrahedron, the tetrahedron is deliberately unrelated to the assessed voxel scene. The starter does **not** provide:
+The starter code is designed to be a minimal, working 3D OpenGL application that students can build upon. It opens an OpenGL 3.3 window, shows a start screen, and then renders one fixed, coloured tetrahedron, the tetrahedron is deliberately unrelated to the assessed voxel scene. A2 adds a controllable camera and shared box queries, described in [A2](docs/A2.md). The original starter does **not** provide:
 
 - Voxel or chunk storage, block/cube mesh generation, indexed meshing, or a controllable camera.
 - Texture-atlas UVs, materials, lighting, humanoid modelling, skin mapping, or animation (Optional).
@@ -34,7 +34,7 @@ Students are expected to replace/remove `Example3DMesh` and the fixed transform 
 assets/textures/    Textures you need to load and use for your assignment, you need to add your charactor skin texture to this folder. NameMC is a good website to find skins you like.
 assets/shaders/     Minimal GLSL shaders, plus the text and start screen shaders
 src/app/            AppUi, CustomUi, TitleScreen, and the independent benchmark timer
-src/core/           Asset lookup
+src/core/           Asset lookup, camera math, ray and spatial queries
 src/graphics/       Window, shader, texture, text renderer, and tetrahedron example
 tests/              Optional Catch2 self-tests
 ```
@@ -62,6 +62,17 @@ After a successful build, the executable is `build/Craft` on macOS/Linux and
 ./build/Craft
 ```
 
+### A2 controls
+
+After Enter, press **Tab** to capture the mouse. Use **WASD** to walk on the
+horizontal plane and the **mouse** to look around. Press **Tab** again to use
+the controls panel. **Esc** closes the application.
+
+The panel shows camera position, orientation, forward direction, and the
+centre ray's hit distance against the tetrahedron's bounding box. This is a
+box-query demo, not shooting or triangle picking. Collision and the voxel
+world are not connected yet. See [the review guide](docs/A2.md) for the API.
+
 ## Start screen
 
 `TitleScreen` (`src/app/TitleScreen.cpp`) is shown when the application starts, before the tetrahedron scene and the Dear ImGui window:
@@ -80,8 +91,10 @@ Edit `kTitle` and `kPrompt` in `src/app/TitleScreen.cpp` to change the text. Cha
 
 `AppUi` owns the shared Dear ImGui lifecycle and the course-provided benchmark
 section. `CustomUi` remains the separate extension point where students may add
-assignment-specific controls; the starter version only rotates or recolours the
-disposable example object and exposes no camera controls or camera state.
+assignment-specific controls. A2 replaces the example rotation and colour
+widgets with camera and query diagnostics. Starting a benchmark releases the
+mouse and resets the camera to the same pose, with movement disabled until the
+run finishes.
 
 Keep the code that renders your scene inside the benchmark region, between
 `SceneBenchmark::beginSceneFrame()` and `SceneBenchmark::endSceneFrame()`.

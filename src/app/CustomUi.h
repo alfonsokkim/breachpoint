@@ -1,12 +1,18 @@
 #pragma once
 
-#include <array>
+#include <optional>
+
+#include <glm/vec3.hpp>
 
 namespace craft::app {
 
-struct CustomObjectControls {
-  std::array<float, 2> rotationDegrees{0.0F, 0.0F};
-  std::array<float, 3> colourTint{1.0F, 1.0F, 1.0F};
+struct CameraDiagnostics {
+  glm::vec3 position{};
+  glm::vec3 forward{};
+  float yaw = 0.0F;
+  float pitch = 0.0F;
+  bool mouseCaptured = false;
+  std::optional<float> exampleHitDistance;
 };
 
 // Student-facing extension point for assignment-specific Dear ImGui controls.
@@ -16,10 +22,10 @@ class CustomUi {
   // Draws only the custom component inside an existing ImGui window.
   void drawContents(bool interactionDisabled);
 
-  [[nodiscard]] const CustomObjectControls& objectControls() const noexcept;
+  void setDiagnostics(const CameraDiagnostics& diagnostics);
 
  private:
-  CustomObjectControls objectControls_;
+  CameraDiagnostics diagnostics_;
 };
 
 }  // namespace craft::app
