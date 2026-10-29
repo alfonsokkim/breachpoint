@@ -17,14 +17,14 @@ Neutralise all hostiles before time expires. Lose at zero health, timeout, or tw
 
 ### Controls
 
-| Input          | Action                                |
-| -------------- | ------------------------------------- |
-| Enter / Tab    | Start / capture or release the mouse  |
-| WASD and mouse | Walk on the horizontal plane and look |
-| Left click     | Fire                                  |
-| L              | Toggle the weapon flashlight          |
-| N              | Toggle night vision (optional)        |
-| Esc            | Quit                                  |
+| Input          | Action                                          |
+| -------------- | ----------------------------------------------- |
+| Enter / Tab    | Start / capture or release the mouse            |
+| WASD and mouse | Walk on the horizontal plane and look           |
+| Left click     | Fire                                            |
+| L              | Toggle the weapon flashlight                    |
+| N / F          | Toggle night vision / hip-fire laser (optional) |
+| Esc            | Quit                                            |
 
 ### Levels
 
@@ -45,7 +45,7 @@ Tab releases the mouse for menus. Restart and level switching reset the camera, 
 | Shooting and counterfire | Shared world-space box queries select the nearest target part and check solid-voxel occlusion. Bounded enemy-to-player sight checks drive exposure and repeated damage, with gun-barrel flashes but no projectiles or pathfinding. |
 | Optimisation             | Compare all-face and hidden-face-culled meshes with the same scene, camera, materials, effects, and frozen game state. Use 60 warm-up and 240 measured frames at 1920 x 1080; report mean ms/frame and geometry counts.            |
 | Challenge tasks          | After the core game: time-based particles with motion and lifetimes for sparks and impact dust; Cook-Torrance BRDF with interactive roughness and metallic controls.                                                               |
-| Optional extension       | Grainy night vision after the complete core game. It may be simplified if required features are at risk.                                                                                                                           |
+| Optional extension       | Optional after core: grainy night vision and hip-fire laser. Dot ends at first wall/target; beam visible in night vision.                                                                                                          |
 
 ## Responsibilities and integration
 
@@ -53,7 +53,7 @@ Tab releases the mouse for menus. Restart and level switching reset the camera, 
 | ---------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
 | World and gameplay     | Camera, nearest-hit and line-of-sight queries, diagnostics, and benchmark. | Voxel storage, house builder, level layouts, chunk mesh, and player collision.       | Jubby supplies solid boxes and collision corrections; nearest wall/target hit wins. |
 | Models and interaction | Weapon model, firing, recoil, and player/enemy muzzle-flash rendering.     | Target models, exposure timer, repeated damage, and hit animation.                   | Jubby's damage pulse triggers enemy flash/light; lost sight resets exposure.        |
-| Rendering              | Phong lighting, flashlight, muzzle flashes, and particle challenge.        | Textures and interactive BRDF challenge.                                             | Check consistent coordinates, materials, effects, and damage feedback.              |
+| Rendering              | Phong lighting, flashlight/laser, muzzle flashes and particles.            | Textures and interactive BRDF challenge.                                             | Check consistent coordinates, materials, effects, and damage feedback.              |
 | Game state and UI      | Supply visibility queries and effect triggers to game logic.               | Health, rules, HUD, menus, level switching, counterfire reset, and full reset logic. | Reset camera, effects and game state; review branches before merging.               |
 | Delivery               | Optimisation results and VLAB checks.                                      | Level and gameplay testing.                                                          | Record asset licences, prepare report evidence, and rehearse the presentation.      |
 
