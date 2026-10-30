@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1820" viewBox="0 0 1200 1820" role="img" aria-labelledby="flow-title flow-description">
+  <title id="flow-title">Breachpoint: Two-Person Task Flow</title>
+  <desc id="flow-description">Alfonso owns camera, shooting, lighting, particles and benchmarking, plus the optional hip-fire laser sight. Jason owns the world, game state, targets, counterfire and BRDF materials, plus optional night vision. Both streams join for integration and delivery.</desc>
+  <defs>
+    <style>
+      .title { font: 700 30px Arial, sans-serif; fill: #181818; }
+      .subtitle { font: 16px Arial, sans-serif; fill: #555; }
+      .stage { font: 700 13px Arial, sans-serif; fill: #555; letter-spacing: 1px; }
+      .task { font: 700 18px Arial, sans-serif; fill: #181818; }
+      .owner { font: 700 14px Arial, sans-serif; fill: #181818; letter-spacing: 0.6px; }
+      .note { font: 14px Arial, sans-serif; fill: #333; }
+      .poleLabel { font: 700 12px Arial, sans-serif; fill: #555; letter-spacing: 1.2px; }
+      .box { stroke: #3f3f3f; stroke-width: 1.5; }
+      .connector { fill: none; stroke: #777; stroke-width: 2; }
+      .alfonsoRail { fill: none; stroke: #b27b00; stroke-width: 5; marker-end: url(#arrowA); }
+      .jasonRail { fill: none; stroke: #267d91; stroke-width: 5; marker-end: url(#arrowJ); }
+    </style>
+    <marker id="arrowA" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#b27b00"/>
+    </marker>
+    <marker id="arrowJ" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#267d91"/>
+    </marker>
+    <marker id="arrowShared" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#4f6f51"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="1820" fill="#ffffff"/>
+  <text x="600" y="50" text-anchor="middle" class="title">Breachpoint: Two-Person Task Flow</text>
+  <text x="600" y="78" text-anchor="middle" class="subtitle">Fixed owner streams connect through one shared integration spine</text>
+
+  <rect x="490" y="102" width="220" height="62" fill="#e9e9e9" class="box"/>
+  <text x="600" y="129" text-anchor="middle" class="task">Project start</text>
+  <text x="600" y="151" text-anchor="middle" class="note">Shared interfaces agreed</text>
+
+  <!-- Central integration pole -->
+  <line x1="600" y1="164" x2="600" y2="1414" stroke="#d1d1d1" stroke-width="16"/>
+  <line x1="600" y1="164" x2="600" y2="1414" stroke="#555" stroke-width="2"/>
+  <text x="600" y="194" text-anchor="middle" class="poleLabel">SHARED SPINE</text>
+
+  <!-- Stage markers on the pole -->
+  <circle cx="600" cy="280" r="23" fill="#fff" stroke="#555" stroke-width="2"/>
+  <text x="600" y="286" text-anchor="middle" class="task">1</text>
+  <text x="600" y="322" text-anchor="middle" class="stage">FOUNDATIONS</text>
+
+  <circle cx="600" cy="520" r="23" fill="#fff" stroke="#555" stroke-width="2"/>
+  <text x="600" y="526" text-anchor="middle" class="task">2</text>
+  <text x="600" y="562" text-anchor="middle" class="stage">DEPENDENCIES</text>
+
+  <circle cx="600" cy="760" r="23" fill="#fff" stroke="#555" stroke-width="2"/>
+  <text x="600" y="766" text-anchor="middle" class="task">3</text>
+  <text x="600" y="802" text-anchor="middle" class="stage">COMBAT LOOP</text>
+
+  <circle cx="600" cy="1000" r="23" fill="#fff" stroke="#555" stroke-width="2"/>
+  <text x="600" y="1006" text-anchor="middle" class="task">4</text>
+  <text x="600" y="1042" text-anchor="middle" class="stage">COMPLETE PATHS</text>
+
+  <circle cx="600" cy="1250" r="23" fill="#fff" stroke="#555" stroke-width="2"/>
+  <text x="600" y="1256" text-anchor="middle" class="task">5</text>
+  <text x="600" y="1292" text-anchor="middle" class="stage">OPTIONAL POLISH</text>
+
+  <!-- Fixed owner streams -->
+  <path d="M570 164 C530 180 480 195 480 230 V1300 C480 1355 535 1390 600 1414" class="alfonsoRail"/>
+  <path d="M630 164 C670 180 720 195 720 230 V1300 C720 1355 665 1390 600 1414" class="jasonRail"/>
+
+  <!-- Stage 1 cards -->
+  <rect x="55" y="212" width="395" height="136" fill="#fff1a8" class="box"/>
+  <text x="252" y="240" text-anchor="middle" class="owner">ALFONSO</text>
+  <text x="252" y="270" text-anchor="middle" class="task">A1: Starter baseline + tests</text>
+  <text x="252" y="296" text-anchor="middle" class="task">A2: Camera + spatial queries</text>
+  <text x="252" y="323" text-anchor="middle" class="note">Build, CTest, hits and voxel occlusion</text>
+  <path d="M450 280 H480" class="connector"/>
+
+  <rect x="750" y="212" width="395" height="136" fill="#bfeaf2" class="box"/>
+  <text x="948" y="240" text-anchor="middle" class="owner">JASON</text>
+  <text x="948" y="270" text-anchor="middle" class="task">J1: Voxel world + level API</text>
+  <text x="948" y="296" text-anchor="middle" class="task">J2: Game state + HUD skeleton</text>
+  <text x="948" y="323" text-anchor="middle" class="note">World storage, health, timer and reset state</text>
+  <path d="M720 280 H750" class="connector"/>
+
+  <!-- Stage 2 cards -->
+  <rect x="55" y="452" width="395" height="136" fill="#fff1a8" class="box"/>
+  <text x="252" y="480" text-anchor="middle" class="owner">ALFONSO</text>
+  <text x="252" y="510" text-anchor="middle" class="task">A3: Shooting + blocked hits</text>
+  <text x="252" y="536" text-anchor="middle" class="task">A4: Lighting + materials</text>
+  <text x="252" y="563" text-anchor="middle" class="note">Nearest visible hit, flashlight and flash-light slot</text>
+  <path d="M450 520 H480" class="connector"/>
+
+  <rect x="750" y="452" width="395" height="136" fill="#bfeaf2" class="box"/>
+  <text x="948" y="480" text-anchor="middle" class="owner">JASON</text>
+  <text x="948" y="510" text-anchor="middle" class="task">J3: Target hierarchy + animation</text>
+  <text x="948" y="536" text-anchor="middle" class="task">J4: Levels + reset flow</text>
+  <text x="948" y="563" text-anchor="middle" class="note">Hostiles, civilians, level switching and restart</text>
+  <path d="M720 520 H750" class="connector"/>
+
+  <!-- Stage 3 cards -->
+  <rect x="55" y="692" width="395" height="136" fill="#fff1a8" class="box"/>
+  <text x="252" y="720" text-anchor="middle" class="owner">ALFONSO</text>
+  <text x="252" y="750" text-anchor="middle" class="task">A5: Muzzle flashes + particles</text>
+  <text x="252" y="778" text-anchor="middle" class="note">Player and enemy gun-barrel effects</text>
+  <text x="252" y="803" text-anchor="middle" class="note">Triggered by the shared counterfire event</text>
+  <path d="M450 760 H480" class="connector"/>
+
+  <rect x="750" y="692" width="395" height="136" fill="#bfeaf2" class="box"/>
+  <text x="948" y="720" text-anchor="middle" class="owner">JASON</text>
+  <text x="948" y="750" text-anchor="middle" class="task">J5: Enemy LOS exposure + damage</text>
+  <text x="948" y="778" text-anchor="middle" class="note">Visible timer, repeated damage pulses</text>
+  <text x="948" y="803" text-anchor="middle" class="note">Breaking line of sight resets exposure</text>
+  <path d="M720 760 H750" class="connector"/>
+
+  <!-- Stage 4 cards -->
+  <rect x="55" y="932" width="395" height="136" fill="#fff1a8" class="box"/>
+  <text x="252" y="960" text-anchor="middle" class="owner">ALFONSO</text>
+  <text x="252" y="990" text-anchor="middle" class="task">A6: Optimisation + benchmark</text>
+  <text x="252" y="1018" text-anchor="middle" class="note">Chunk mesh comparison and VLAB timing</text>
+  <text x="252" y="1043" text-anchor="middle" class="note">Supplies evidence for final evaluation</text>
+  <path d="M450 1000 H480" class="connector"/>
+
+  <rect x="750" y="932" width="395" height="136" fill="#bfeaf2" class="box"/>
+  <text x="948" y="960" text-anchor="middle" class="owner">JASON</text>
+  <text x="948" y="990" text-anchor="middle" class="task">J6: BRDF controls + textures</text>
+  <text x="948" y="1016" text-anchor="middle" class="task">J7: Gameplay validation</text>
+  <text x="948" y="1043" text-anchor="middle" class="note">Levels, HUD, reset and damage rules</text>
+  <path d="M720 1000 H750" class="connector"/>
+
+  <!-- Optional owner extensions -->
+  <rect x="55" y="1162" width="395" height="174" fill="#fff1a8" class="box"/>
+  <text x="252" y="1190" text-anchor="middle" class="owner">ALFONSO</text>
+  <text x="252" y="1220" text-anchor="middle" class="task">A7: Hip-fire laser sight</text>
+  <text x="252" y="1250" text-anchor="middle" class="note">F: toggle laser independently</text>
+  <text x="252" y="1276" text-anchor="middle" class="note">Dot stops at first wall or target</text>
+  <text x="252" y="1300" text-anchor="middle" class="note">Beam visible in night vision</text>
+  <text x="252" y="1320" text-anchor="middle" class="note">Optional after the core game works</text>
+  <path d="M450 1250 H480" class="connector"/>
+
+  <rect x="750" y="1162" width="395" height="174" fill="#bfeaf2" class="box"/>
+  <text x="948" y="1190" text-anchor="middle" class="owner">JASON</text>
+  <text x="948" y="1220" text-anchor="middle" class="task">J8: Night vision</text>
+  <text x="948" y="1250" text-anchor="middle" class="note">N: toggle grainy night vision</text>
+  <text x="948" y="1276" text-anchor="middle" class="note">Green tint and boosted visibility</text>
+  <text x="948" y="1300" text-anchor="middle" class="note">Keep the laser beam visible</text>
+  <text x="948" y="1320" text-anchor="middle" class="note">Optional after the core game works</text>
+  <path d="M720 1250 H750" class="connector"/>
+
+  <!-- Shared delivery chain -->
+  <rect x="390" y="1414" width="420" height="82" fill="#cdeccf" class="box"/>
+  <text x="600" y="1446" text-anchor="middle" class="task">S1: Feature integration tests</text>
+  <text x="600" y="1473" text-anchor="middle" class="note">Both levels, effects, state reset and failures</text>
+  <path d="M600 1496 V1542" fill="none" stroke="#4f6f51" stroke-width="4" marker-end="url(#arrowShared)"/>
+
+  <rect x="390" y="1542" width="420" height="82" fill="#cdeccf" class="box"/>
+  <text x="600" y="1574" text-anchor="middle" class="task">S2: Evidence + presentation prep</text>
+  <text x="600" y="1601" text-anchor="middle" class="note">Licences, report evidence and rehearsal</text>
+  <path d="M600 1624 V1668" fill="none" stroke="#4f6f51" stroke-width="4" marker-end="url(#arrowShared)"/>
+
+  <rect x="465" y="1668" width="270" height="66" fill="#e9e9e9" class="box"/>
+  <text x="600" y="1708" text-anchor="middle" class="task">Submission ready</text>
+
+  <!-- Legend -->
+  <rect x="270" y="1770" width="24" height="24" fill="#fff1a8" class="box"/>
+  <text x="306" y="1788" class="note">Alfonso-owned stream</text>
+  <rect x="510" y="1770" width="24" height="24" fill="#bfeaf2" class="box"/>
+  <text x="546" y="1788" class="note">Jason-owned stream</text>
+  <rect x="750" y="1770" width="24" height="24" fill="#cdeccf" class="box"/>
+  <text x="786" y="1788" class="note">Shared delivery</text>
+</svg>
