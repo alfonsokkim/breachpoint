@@ -7,7 +7,7 @@ COMP3421 Group Project Plan
 | Member            | zID      | Planned workload |
 | ----------------- | -------- | ---------------- |
 | Alfonso Kim       | z5587687 | 25 to 30 hours   |
-| Jason Luo (Jubby) | z5589683 | 25 to 30 hours   |
+| Jason Luo         | z5589683 | 25 to 30 hours   |
 
 ## Game concept and gameplay
 
@@ -49,10 +49,10 @@ Tab releases the mouse for menus. Restart and level switching reset the camera, 
 
 ## Responsibilities and integration
 
-| Work area              | Alfonso Kim                                                                | Jubby                                                                                | Integration                                                                         |
+| Work area              | Alfonso Kim                                                                | Jason                                                                                | Integration                                                                         |
 | ---------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| World and gameplay     | Camera, nearest-hit and line-of-sight queries, diagnostics, and benchmark. | Voxel storage, house builder, level layouts, chunk mesh, and player collision.       | Jubby supplies solid boxes and collision corrections; nearest wall/target hit wins. |
-| Models and interaction | Weapon model, firing, recoil, and player/enemy muzzle-flash rendering.     | Target models, exposure timer, repeated damage, and hit animation.                   | Jubby's damage pulse triggers enemy flash/light; lost sight resets exposure.        |
+| World and gameplay     | Camera, nearest-hit and line-of-sight queries, diagnostics, and benchmark. | Voxel storage, house builder, level layouts, chunk mesh, and player collision.       | Jason supplies solid boxes and collision corrections; nearest wall/target hit wins. |
+| Models and interaction | Weapon model, firing, recoil, and player/enemy muzzle-flash rendering.     | Target models, exposure timer, repeated damage, and hit animation.                   | Jason's damage pulse triggers enemy flash/light; lost sight resets exposure.        |
 | Rendering              | Phong lighting, flashlight/laser, muzzle flashes and particles.            | Textures, BRDF controls and night vision.                                            | Check consistent coordinates, materials, effects, and damage feedback.              |
 | Game state and UI      | Supply visibility queries and effect triggers to game logic.               | Health, rules, HUD, menus, level switching, counterfire reset, and full reset logic. | Reset camera, effects and game state; review branches before merging.               |
 | Delivery               | Optimisation results and VLAB checks.                                      | Level and gameplay testing.                                                          | Record asset licences, prepare report evidence, and rehearse the presentation.      |
