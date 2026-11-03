@@ -12,9 +12,10 @@
 #include "app/SceneBenchmark.h"
 #include "app/TitleScreen.h"
 #include "core/AssetPath.h"
-#include "graphics/Example3DMesh.h"
+#include "graphics/Chunk.h"
 #include "graphics/OpenGL.h"
 #include "graphics/Shader.h"
+#include "graphics/Texture.h"
 #include "graphics/Window.h"
 
 namespace {
@@ -43,25 +44,17 @@ void printBenchmarkResult(const craft::app::BenchmarkSnapshot& result,
                "between the beginSceneFrame and endSceneFrame calls\n";
 }
 
-glm::mat4 fixedStarterViewProjection(int framebufferWidth,
-                                     int framebufferHeight) {
+glm::mat4 projection(int framebufferWidth, int framebufferHeight) {
   const float aspect = static_cast<float>(framebufferWidth) /
                        static_cast<float>(framebufferHeight);
-  const glm::mat4 projection =
-      glm::perspective(glm::radians(55.0F), aspect, 0.1F, 100.0F);
-  const glm::mat4 view =
-      glm::lookAt(glm::vec3(2.4F, 1.8F, 3.0F), glm::vec3(0.0F),
-                  glm::vec3(0.0F, 1.0F, 0.0F));
-  return projection * view;
+  return glm::perspective(glm::radians(60.0F), aspect, 0.1F, 100.0F);
 }
 
-glm::mat4 exampleModelMatrix(const craft::app::CustomObjectControls& controls) {
-  glm::mat4 model(1.0F);
-  model = glm::rotate(model, glm::radians(controls.rotationDegrees[0]),
-                      glm::vec3(1.0F, 0.0F, 0.0F));
-  model = glm::rotate(model, glm::radians(controls.rotationDegrees[1]),
-                      glm::vec3(0.0F, 1.0F, 0.0F));
-  return model;
+// Looks at the demo hut's doorway from just outside the platform.
+glm::mat4 fixedView() {
+  return glm::lookAt(glm::vec3(7.0F, 10.0F, 25.0F),
+                     glm::vec3(15.5F, 5.0F, 15.5F),
+                     glm::vec3(0.0F, 1.0F, 0.0F));
 }
 
 }  // namespace
@@ -70,10 +63,13 @@ int main() {
   try {
     craft::graphics::Window window(kInitialWidth, kInitialHeight,
                                    "Breachpoint");
-    craft::graphics::Shader shader(
-        craft::core::assetPath("shaders/basic.vert"),
-        craft::core::assetPath("shaders/basic.frag"));
-    const craft::graphics::Example3DMesh exampleMesh;
+    craft::graphics::Shader chunkShader(
+        craft::core::assetPath("shaders/chunk.vert"),
+        craft::core::assetPath("shaders/chunk.frag"));
+    const craft::graphics::Texture blockAtlas(
+        craft::core::assetPath("textures/texture.png"),
+        craft::graphics::Texture::Magnification::Nearest);
+    const craft::graphics::Chunk chunk(blockAtlas);
     craft::app::AppUi appUi(window);
     craft::app::SceneBenchmark benchmark;
 
@@ -126,15 +122,15 @@ int main() {
       glClearColor(0.08F, 0.10F, 0.14F, 1.0F);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-      shader.use();
-      const auto& objectControls = appUi.objectControls();
-      shader.setMat4("uMvp", fixedStarterViewProjection(framebufferWidth,
-                                                        framebufferHeight) *
-                                 exampleModelMatrix(objectControls));
-      shader.setVec3("uTint", glm::vec3(objectControls.colourTint[0],
-                                        objectControls.colourTint[1],
-                                        objectControls.colourTint[2]));
-      exampleMesh.draw();
+      // Chunk faces wind counter-clockwise, so hidden back faces are skipped.
+      glEnable(GL_CULL_FACE);
+      chunkShader.use();
+      chunkShader.setMat4("uProj",
+                          projection(framebufferWidth, framebufferHeight));
+      chunkShader.setMat4("uView", fixedView());
+      chunkShader.setMat4("uModel", chunk.getModel());
+      chunkShader.setInt("uTex", 0);
+      chunk.draw();
 
       const bool benchmarkCompleted = benchmark.endSceneFrame();
       if (benchmarkCompleted) {

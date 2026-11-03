@@ -24,10 +24,12 @@ Texture::Texture(const std::filesystem::path& path,
                GL_UNSIGNED_BYTE, pixels);
   stbi_image_free(pixels);
 
-  // Mipmaps keep scaled-down images smooth; clamping stops edge bleeding.
+  // Mipmaps keep scaled-down images stable; nearest sampling within each
+  // level stops atlas tiles bleeding into neighbours; clamping stops edge
+  // bleeding.
   glGenerateMipmap(GL_TEXTURE_2D);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                  GL_LINEAR_MIPMAP_LINEAR);
+                  GL_NEAREST_MIPMAP_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
                   magnification == Magnification::Nearest ? GL_NEAREST
                                                           : GL_LINEAR);
