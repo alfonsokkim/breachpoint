@@ -12,6 +12,7 @@
 #include "app/SceneBenchmark.h"
 #include "app/TitleScreen.h"
 #include "core/AssetPath.h"
+#include "graphics/Character.h"
 #include "graphics/Chunk.h"
 #include "graphics/OpenGL.h"
 #include "graphics/Shader.h"
@@ -70,6 +71,12 @@ int main() {
         craft::core::assetPath("textures/texture.png"),
         craft::graphics::Texture::Magnification::Nearest);
     const craft::graphics::Chunk chunk(blockAtlas);
+    const craft::graphics::Texture steveSkin(
+        craft::core::assetPath("textures/steve.png"),
+        craft::graphics::Texture::Magnification::Nearest);
+    // Stands on the grass just outside the hut's doorway.
+    const craft::graphics::Character steve(steveSkin,
+                                           glm::vec3(11.5F, 5.0F, 15.5F));
     craft::app::AppUi appUi(window);
     craft::app::SceneBenchmark benchmark;
 
@@ -131,6 +138,7 @@ int main() {
       chunkShader.setMat4("uModel", chunk.getModel());
       chunkShader.setInt("uTex", 0);
       chunk.draw();
+      steve.draw(chunkShader);
 
       const bool benchmarkCompleted = benchmark.endSceneFrame();
       if (benchmarkCompleted) {

@@ -48,6 +48,10 @@ struct VoxelFace {
 // Offset to the neighbouring cell that this face touches.
 glm::ivec3 faceNeighbourOffset(FaceDirection direction);
 
+// Corners of one face of the unit cube, listed bottom-left, top-left,
+// top-right, bottom-right as seen from outside, matching VoxelFace::kIndices.
+const std::array<glm::vec3, 4>& faceCorners(FaceDirection direction);
+
 // Builds one face of a unit block whose minimum corner sits at `position`,
 // with UVs pointing at the block's tile in the 16x16 texture atlas.
 VoxelFace makeVoxelFace(BlockType type, FaceDirection direction,

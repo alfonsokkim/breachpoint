@@ -59,6 +59,10 @@ glm::ivec3 faceNeighbourOffset(FaceDirection direction) {
   return faceTemplate(direction).normal;
 }
 
+const std::array<glm::vec3, 4>& faceCorners(FaceDirection direction) {
+  return faceTemplate(direction).corners;
+}
+
 VoxelFace makeVoxelFace(BlockType type, FaceDirection direction,
                         const glm::ivec3& position) {
   const FaceTemplate& face = faceTemplate(direction);
