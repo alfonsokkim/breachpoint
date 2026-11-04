@@ -1,11 +1,13 @@
 #pragma once
 
 #include <array>
+#include <vector>
 
 #include <glm/mat4x4.hpp>
 
 #include "graphics/Texture.h"
 #include "graphics/Voxel.h"
+#include "core/Ray.h"
 
 namespace craft::graphics {
 
@@ -31,6 +33,11 @@ class Chunk {
 
   [[nodiscard]] int getFaceCount() const noexcept { return faceCount_; }
 
+  // World-space boxes from the same blocks used to build the visible mesh.
+  [[nodiscard]] const std::vector<core::Aabb>& getSolidBounds() const noexcept {
+    return solidBounds_;
+  }
+
  private:
   using Blocks =
       std::array<std::array<std::array<BlockType, kSize>, kSize>, kSize>;
@@ -46,6 +53,7 @@ class Chunk {
 
   const Texture& atlas_;
   Blocks blocks_{};
+  std::vector<core::Aabb> solidBounds_;
   unsigned int vertexArray_ = 0;
   unsigned int vertexBuffer_ = 0;
   unsigned int indexBuffer_ = 0;

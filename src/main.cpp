@@ -14,6 +14,7 @@
 #include "app/TitleScreen.h"
 #include "core/AssetPath.h"
 #include "core/Camera.h"
+#include "core/SpatialQueries.h"
 #include "graphics/Character.h"
 #include "graphics/Chunk.h"
 #include "graphics/OpenGL.h"
@@ -128,9 +129,11 @@ int main() {
       controller.update(deltaSeconds, !benchmarkState.running,
                          appUi.wantsKeyboardInput());
       appUi.beginFrame(controller.mouseCaptured());
+      const auto hit = craft::core::nearestBoxHit(camera.ray(), chunk.getSolidBounds());
       appUi.setDiagnostics({camera.position(), camera.forward(),
                             camera.yawDegrees(), camera.pitchDegrees(),
-                            controller.mouseCaptured(), std::nullopt,
+                            controller.mouseCaptured(),
+                            hit ? std::optional<float>(hit->t) : std::nullopt,
                             chunk.getFaceCount()});
       if (appUi.draw(benchmarkState) && !benchmarkState.running) {
         startBenchmark(window, benchmark, camera, controller);

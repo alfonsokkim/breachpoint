@@ -68,6 +68,7 @@ void Chunk::seedDemoScene() {
 void Chunk::buildMesh() {
   std::vector<VoxelVertex> vertices;
   std::vector<unsigned int> indices;
+  solidBounds_.clear();
 
   for (int x = 0; x < kSize; ++x) {
     for (int y = 0; y < kSize; ++y) {
@@ -77,6 +78,8 @@ void Chunk::buildMesh() {
           continue;
         }
         const glm::ivec3 position(x, y, z);
+        const glm::vec3 minimum(position);
+        solidBounds_.push_back({minimum, minimum + glm::vec3(1.0F)});
         for (const FaceDirection direction : kFaceDirections) {
           const glm::ivec3 neighbour =
               position + faceNeighbourOffset(direction);
