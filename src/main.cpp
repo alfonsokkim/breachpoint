@@ -14,24 +14,31 @@
 #include "app/TitleScreen.h"
 #include "core/AssetPath.h"
 #include "core/Camera.h"
-#include "core/SpatialQueries.h"
-#include "graphics/Example3DMesh.h"
+#include "graphics/Character.h"
+#include "graphics/Chunk.h"
 #include "graphics/OpenGL.h"
 #include "graphics/Shader.h"
+#include "graphics/Texture.h"
 #include "graphics/Window.h"
 
 namespace {
 
 constexpr int kInitialWidth = 1280;
 constexpr int kInitialHeight = 720;
-constexpr const char* kStarterWorkload = "starter-3d-tetrahedron";
+constexpr const char* kWorldWorkload = "voxel-hut-and-character";
+
+craft::core::Camera spawnCamera() {
+  craft::core::Camera camera({11.5F, 6.6F, 19.5F});
+  camera.look(45.0F, 15.0F);
+  return camera;
+}
 
 void startBenchmark(craft::graphics::Window& window,
                     craft::app::SceneBenchmark& benchmark,
                     craft::core::Camera& camera,
                     craft::app::CameraController& controller) {
   controller.releaseMouse();
-  camera = craft::core::Camera{};
+  camera = spawnCamera();
   window.setFramebufferSize(craft::app::kBenchmarkFramebufferWidth,
                             craft::app::kBenchmarkFramebufferHeight);
   window.setVSync(false);
@@ -45,9 +52,9 @@ void printBenchmarkResult(const craft::app::BenchmarkSnapshot& result,
             << " average_ms=" << result.averageMilliseconds
             << " average_fps=" << result.averageFramesPerSecond
             << " resolution=" << framebufferWidth << 'x' << framebufferHeight
-            << " workload=" << kStarterWorkload << '\n'
-            << "benchmark_note=replace the tetrahedron with your voxel scene "
-               "between the beginSceneFrame and endSceneFrame calls\n";
+            << " workload=" << kWorldWorkload << '\n'
+            << "benchmark_note=demo hut and character; "
+               "no optimisation comparison yet\n";
 }
 
 }  // namespace
@@ -57,15 +64,20 @@ int main() {
     craft::graphics::Window window(kInitialWidth, kInitialHeight,
                                    "Breachpoint");
     craft::graphics::Shader shader(
-        craft::core::assetPath("shaders/basic.vert"),
-        craft::core::assetPath("shaders/basic.frag"));
-    const craft::graphics::Example3DMesh exampleMesh;
-    craft::core::Camera camera;
+        craft::core::assetPath("shaders/chunk.vert"),
+        craft::core::assetPath("shaders/chunk.frag"));
+    const craft::graphics::Texture atlas(
+        craft::core::assetPath("textures/texture.png"),
+        craft::graphics::Texture::Magnification::Nearest);
+    const craft::graphics::Chunk chunk(atlas);
+    const craft::graphics::Texture steveSkin(
+        craft::core::assetPath("textures/steve.png"),
+        craft::graphics::Texture::Magnification::Nearest);
+    const craft::graphics::Character steve(steveSkin, {11.5F, 5.0F, 15.5F});
+    craft::core::Camera camera = spawnCamera();
     craft::app::CameraController controller(window, camera);
     craft::app::AppUi appUi(window);
     craft::app::SceneBenchmark benchmark;
-    const std::vector<craft::core::Aabb> exampleBounds{
-        {{-0.75F, -0.6F, -0.75F}, {0.75F, 0.8F, 0.55F}}};
 
     const bool commandLineBenchmark =
         craft::app::benchmarkRequestedFromEnvironment();
@@ -116,11 +128,10 @@ int main() {
       controller.update(deltaSeconds, !benchmarkState.running,
                          appUi.wantsKeyboardInput());
       appUi.beginFrame(controller.mouseCaptured());
-      const auto hit = craft::core::nearestBoxHit(camera.ray(), exampleBounds);
       appUi.setDiagnostics({camera.position(), camera.forward(),
                             camera.yawDegrees(), camera.pitchDegrees(),
-                            controller.mouseCaptured(),
-                            hit ? std::optional<float>(hit->t) : std::nullopt});
+                            controller.mouseCaptured(), std::nullopt,
+                            chunk.getFaceCount()});
       if (appUi.draw(benchmarkState) && !benchmarkState.running) {
         startBenchmark(window, benchmark, camera, controller);
         const auto resizedFramebuffer = window.framebufferSize();
@@ -135,11 +146,14 @@ int main() {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
       shader.use();
+      glEnable(GL_CULL_FACE);
       const float aspect = static_cast<float>(framebufferWidth) /
                            static_cast<float>(framebufferHeight);
-      shader.setMat4("uMvp", camera.viewProjection(aspect));
-      shader.setVec3("uTint", glm::vec3(1.0F));
-      exampleMesh.draw();
+      shader.setMat4("uViewProjection", camera.viewProjection(aspect));
+      shader.setMat4("uModel", chunk.getModel());
+      shader.setInt("uTex", 0);
+      chunk.draw();
+      steve.draw(shader);
 
       const bool benchmarkCompleted = benchmark.endSceneFrame();
       if (benchmarkCompleted) {

@@ -12,7 +12,8 @@ struct CameraDiagnostics {
   float yaw = 0.0F;
   float pitch = 0.0F;
   bool mouseCaptured = false;
-  std::optional<float> exampleHitDistance;
+  std::optional<float> solidHitDistance;
+  int worldFaces = 0;
 };
 
 // Student-facing extension point for assignment-specific Dear ImGui controls.

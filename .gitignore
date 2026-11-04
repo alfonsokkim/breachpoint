@@ -6,3 +6,4 @@ ignore/
 imgui.ini
 .DS_Store
 _deps/
+.cache/
