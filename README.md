@@ -4,7 +4,7 @@
 
 The codebase is the starter code for the COMP3421/COMP9415 26T3 Computer Graphics group assignment, which requires students to implement a simple Minecraft-style voxel game. You can find the assignment specification in [Group Assignment Specification repo](https://gitlab.cse.unsw.edu.au/coursework/COMP3421/26T3/group-assignment-spec).
 
-The starter code is designed to be a minimal, working 3D OpenGL application that students can build upon. It opens an OpenGL 3.3 window, shows a start screen, and then renders one fixed, coloured tetrahedron, the tetrahedron is deliberately unrelated to the assessed voxel scene. A2 adds a controllable camera and shared box queries, described in [A2](docs/A2.md). The original starter does **not** provide:
+The current scene combines Jason's textured voxel platform, hut and Steve model with Alfonso's first-person camera. WASD and mouse look work on the raised platform, with wall collision and edge protection. See [the integration guide](docs/CameraWorld.md) and the original [A2 camera guide](docs/A2.md). The original starter does **not** provide:
 
 - Voxel or chunk storage, block/cube mesh generation, indexed meshing, or a controllable camera.
 - Texture-atlas UVs, materials, lighting, humanoid modelling, skin mapping, or animation (Optional).
@@ -34,8 +34,8 @@ Students are expected to replace/remove `Example3DMesh` and the fixed transform 
 assets/textures/    Textures you need to load and use for your assignment, you need to add your charactor skin texture to this folder. NameMC is a good website to find skins you like.
 assets/shaders/     Minimal GLSL shaders, plus the text and start screen shaders
 src/app/            AppUi, CustomUi, TitleScreen, and the independent benchmark timer
-src/core/           Asset lookup, camera math, ray and spatial queries
-src/graphics/       Window, shader, texture, text renderer, and tetrahedron example
+src/core/           Camera, ray queries, player collision and asset lookup
+src/graphics/       Voxel/chunk mesh, character, window, shaders, textures and text
 tests/              Optional Catch2 self-tests
 ```
 
@@ -62,20 +62,25 @@ After a successful build, the executable is `build/Craft` on macOS/Linux and
 ./build/Craft
 ```
 
-### A2 controls
+### Camera and map controls
 
 After Enter, press **Tab** to capture the mouse. Use **WASD** to walk on the
 horizontal plane and the **mouse** to look around. Press **Tab** again to use
 the controls panel. **Esc** closes the application.
 
-The panel shows camera position, orientation, forward direction, and the
-centre ray's hit distance against the tetrahedron's bounding box. This is a
-box-query demo, not shooting or triangle picking. Collision and the voxel
-world are not connected yet. See [the review guide](docs/A2.md) for the API.
+You spawn at `(11.5, 6.6, 19.5)` facing the hut. Your feet stay at the platform
+height of 5 units, with the camera 1.6 units above it. Walls stop you, diagonal
+movement slides along walls, and the player fits through the hut's doorway.
+The platform edges stop movement so you cannot walk into empty space.
+
+The panel shows camera pose, the nearest solid block in your aim, actual chunk
+face/triangle counts and seven scene draw calls (chunk plus six character parts).
+This integration supports a flat floor; gravity, jumping, stairs and character
+collision remain later work. Shooting is still on its separate A3 branch.
 
 ## Start screen
 
-`TitleScreen` (`src/app/TitleScreen.cpp`) is shown when the application starts, before the tetrahedron scene and the Dear ImGui window:
+`TitleScreen` (`src/app/TitleScreen.cpp`) is shown when the application starts, before the voxel scene and the Dear ImGui window:
 
 - A plain black background with a white "Breachpoint" title and a smaller grey "Press Enter to start" prompt. The text is drawn with `assets/textures/font.png` through `TextRenderer`.
 - Both lines are visible immediately and stay still.
@@ -138,7 +143,9 @@ The start screen is **skipped** for the environment-triggered run (`CRAFT_BENCHM
 The benchmark disables VSync, performs 60 warm-up frames, measures exactly 240 scene frames with GPU completion synchronisation, prints `average_ms`, then restores
 VSync, and excludes Dear ImGui and buffer swap. An environment-triggered run closes automatically after printing its result.
 
-The starter result is labelled `workload=starter-3d-tetrahedron`. It validates only the benchmark harness and is not assignment performance evidence. **Replace the tetrahedron with your voxel scene between the `beginSceneFrame` and `endSceneFrame` calls** before test your own implementation.
+The current result is labelled `workload=voxel-hut-and-character`. It measures
+the demo map and character from the same spawn camera each time, with input
+disabled. It is not an optimisation comparison or final game-performance result.
 
 When improving performance, consider how mesh generation and draw-call count
 affect the result. Use the benchmark to compare approaches; no specific

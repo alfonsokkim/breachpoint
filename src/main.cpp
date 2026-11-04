@@ -14,6 +14,7 @@
 #include "app/TitleScreen.h"
 #include "core/AssetPath.h"
 #include "core/Camera.h"
+#include "core/PlayerMovement.h"
 #include "core/SpatialQueries.h"
 #include "graphics/Character.h"
 #include "graphics/Chunk.h"
@@ -126,8 +127,11 @@ int main() {
       }
 
       const auto benchmarkState = benchmark.snapshot();
+      const glm::vec3 previousPosition = camera.position();
       controller.update(deltaSeconds, !benchmarkState.running,
                          appUi.wantsKeyboardInput());
+      camera.setPosition(craft::core::movePlayer(
+          previousPosition, camera.position(), chunk.getSolidBounds()));
       appUi.beginFrame(controller.mouseCaptured());
       const auto hit = craft::core::nearestBoxHit(camera.ray(), chunk.getSolidBounds());
       appUi.setDiagnostics({camera.position(), camera.forward(),

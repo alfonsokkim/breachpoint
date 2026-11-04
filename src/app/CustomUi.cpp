@@ -16,10 +16,12 @@ void CustomUi::drawContents(bool interactionDisabled) {
   ImGui::Text("Yaw / pitch: %.1f / %.1f", diagnostics_.yaw, diagnostics_.pitch);
   ImGui::Text("Forward: %.2f %.2f %.2f", f.x, f.y, f.z);
   ImGui::SeparatorText("World");
+  ImGui::TextUnformatted("Wall collision on");
+  ImGui::TextWrapped("Walk through the doorway. Platform edges stop movement.");
   if (diagnostics_.solidHitDistance) {
     ImGui::Text("Block: %.2f units away", *diagnostics_.solidHitDistance);
   } else {
-    ImGui::TextUnformatted("Hit: none");
+    ImGui::TextUnformatted("Block: none in aim");
   }
   ImGui::Text("Chunk faces: %d", diagnostics_.worldFaces);
   ImGui::Text("Scene triangles: %d", diagnostics_.worldFaces * 2 + 72);
