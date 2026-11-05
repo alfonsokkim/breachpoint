@@ -6,6 +6,7 @@
 
 #include "core/Shooting.h"
 #include "core/TrainingRound.h"
+#include "app/SceneBenchmark.h"
 
 namespace craft::app {
 
@@ -27,6 +28,7 @@ struct CameraDiagnostics {
   const char* levelName = "";
   int sceneTriangles = 0;
   int sceneDraws = 0;
+  bool lastShotCivilian = false;
 };
 
 struct RenderSettings {
@@ -42,6 +44,7 @@ class CustomUi {
  public:
   // Draws only the custom component inside an existing ImGui window.
   void drawContents(bool interactionDisabled);
+  void drawHud(const BenchmarkSnapshot& benchmark);
 
   void setDiagnostics(const CameraDiagnostics& diagnostics);
   RenderSettings& settings() { return settings_; }
@@ -49,6 +52,10 @@ class CustomUi {
  private:
   CameraDiagnostics diagnostics_;
   RenderSettings settings_;
+  int previousHealth_ = 100;
+  int previousStrikes_ = 0;
+  double damageUntil_ = 0;
+  double civilianUntil_ = 0;
 };
 
 }  // namespace craft::app

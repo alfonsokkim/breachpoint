@@ -9,8 +9,7 @@ class Window;
 
 namespace craft::app {
 
-// Owns the Dear ImGui lifecycle and composes one compact control window.
-// Assignment-specific controls remain isolated in CustomUi.
+// Owns the Dear ImGui HUD and optional settings panel.
 class AppUi {
  public:
   explicit AppUi(graphics::Window& window);
@@ -33,6 +32,7 @@ class AppUi {
       const BenchmarkSnapshot& benchmark) const;
 
   CustomUi customUi_;
+  bool showControls_ = false;
 };
 
 }  // namespace craft::app

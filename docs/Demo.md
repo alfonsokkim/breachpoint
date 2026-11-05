@@ -16,7 +16,7 @@ patterns are built in the project; no Rainbow Six map or game assets are used.
 5. Move behind a pillar to break sight. Counterfire stops and exposure resets.
 6. Shoot a pillar to show the wall receiving the impact instead of a target
    behind it. Civilian targets also intercept bullets aimed through them.
-7. Press Tab to pause. Press N to show night vision and P to compare lighting.
+7. Press Tab to pause. H opens the settings panel. Press N to show night vision and P to compare lighting.
    The gun's roughness and metallic sliders provide a material comparison.
 8. Press R to return to a fresh round. Press B for the fixed benchmark.
 
@@ -60,6 +60,13 @@ penalty, and checked pause, restart, difficulty, night vision and the B-key
 benchmark. The CLI benchmark completed 240 samples at 1920 x 1080, with a mean
 of 0.7541 ms/frame for this scene. This is a baseline, not an optimisation
 comparison. The screenshot export was also opened and checked.
+
+The gameplay HUD replaces the permanent control sidebar. Health, time,
+remaining hostiles and civilian strikes stay visible, with an exposure meter,
+damage feedback, hit markers and ready/pause/outcome prompts. H or F3 toggles
+the settings panel. The updated HUD was checked at 1280 x 720 and 1920 x 1080,
+including a completed round. The 73 tests still pass and a separate HUD review
+found no actionable issues.
 
 ## Scope
 

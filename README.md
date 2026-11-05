@@ -33,10 +33,16 @@ dependencies on the first build. Original setup notes and references are in
 | 1 / 2 / 3 | Restart on easy / normal / hard |
 | N | Toggle grainy night vision |
 | P | Switch Cook-Torrance and Phong lighting |
+| H / F3 | Show or hide settings, controls and diagnostics |
 | B | Run the fixed 240-frame benchmark |
 | Esc | Quit |
 
-Release the mouse to use the rendering controls. Roughness and metallic
+The gameplay HUD shows health, time, hostiles, civilian strikes, shot count
+and night-vision status. Exposure warnings show when an enemy has sight;
+damage flashes at the screen edges and target hits show a hit marker.
+Settings and diagnostics are hidden by default.
+
+Press H, then release the mouse with Tab to use the rendering controls. Roughness and metallic
 sliders change the gun material. Render preferences persist across a round
 restart; the benchmark resets them to a fixed configuration.
 

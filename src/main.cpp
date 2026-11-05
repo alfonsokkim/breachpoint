@@ -71,6 +71,7 @@ int main() {
     std::vector<graphics::EffectPoint> effects;
     std::optional<core::ShotHit> lastShot;
     float feedback = 0;
+    bool lastShotCivilian = false;
     const auto reset = [&](core::Difficulty difficulty) {
       round.reset(ground, difficulty);
       models.clear();
@@ -81,6 +82,7 @@ int main() {
       camera.look(ground.yaw + 90, 20);
       fireControl = {}; muzzleFlash.reset(); particles.clear(); effects.clear();
       lastShot.reset(); feedback = 0;
+      lastShotCivilian = false;
     };
     reset(core::Difficulty::Normal);
     const auto startBenchmark = [&] {
@@ -152,12 +154,15 @@ int main() {
       if (!measuring) particles.update(elapsed, solids);
       if (fireControl.update(elapsed, trigger, active && round.state == core::RoundState::Playing)) {
         lastShot = core::resolveShot(camera.ray(), solids, targetBoxes);
+        lastShotCivilian = false;
         ++round.shots; feedback = 0.15F; muzzleFlash.trigger();
         particles.emitMuzzle(core::muzzlePosition(camera.ray(), solids), camera.forward());
         if (lastShot) {
           particles.emitImpact(*lastShot);
           if (lastShot->kind == core::ShotHitKind::Target) {
-            const auto [target, part] = owners[lastShot->index]; round.hit(target, part == 0 || part == 6);
+            const auto [target, part] = owners[lastShot->index];
+            lastShotCivilian = round.targets[target].spawn.civilian;
+            round.hit(target, part == 0 || part == 6);
           }
         }
       }
@@ -190,6 +195,7 @@ int main() {
       diagnostics.yaw = camera.yawDegrees(); diagnostics.pitch = camera.pitchDegrees();
       diagnostics.mouseCaptured = controller.mouseCaptured(); diagnostics.worldFaces = chunk.getFaceCount();
       diagnostics.lastShotHit = lastShot; diagnostics.feedbackSeconds = feedback;
+      diagnostics.lastShotCivilian = lastShotCivilian;
       diagnostics.effectPoints = static_cast<int>(effects.size()); diagnostics.round = &round; diagnostics.levelName = ground.name;
       int parts = 0;
       for (const auto& model : models) parts += static_cast<int>(model->partCount());

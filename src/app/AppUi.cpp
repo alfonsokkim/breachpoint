@@ -1,6 +1,7 @@
 #include "app/AppUi.h"
 
 #include <stdexcept>
+#include <algorithm>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -47,16 +48,20 @@ void AppUi::beginFrame(bool mouseCaptured) {
 }
 
 bool AppUi::draw(const BenchmarkSnapshot& benchmark) {
-  constexpr float panelWidth = 300.0F;
-  ImGui::SetNextWindowSize(ImVec2(panelWidth, 0.0F), ImGuiCond_Always);
-  ImGui::SetNextWindowPos(ImVec2(10.0F, 10.0F), ImGuiCond_FirstUseEver);
-  ImGui::Begin("BREACHPOINT / CONTROL", nullptr,
-               ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize);
-
-  customUi_.drawContents(benchmark.running);
-  ImGui::SeparatorText("240-frame benchmark");
-  const bool startBenchmark = drawBenchmarkSection(benchmark);
-
+  if (ImGui::IsKeyPressed(ImGuiKey_H, false) || ImGui::IsKeyPressed(ImGuiKey_F3, false))
+    showControls_ = !showControls_;
+  customUi_.drawHud(benchmark);
+  if (!showControls_) return false;
+  const auto size = ImGui::GetIO().DisplaySize;
+  ImGui::SetNextWindowSize(ImVec2(std::min(320.0F, size.x - 32.0F),
+                                 std::min(560.0F, size.y - 32.0F)), ImGuiCond_Always);
+  ImGui::SetNextWindowPos(ImVec2(std::max(16.0F, size.x - 336.0F), 16.0F), ImGuiCond_Always);
+  bool startBenchmark = false;
+  if (ImGui::Begin("SETTINGS / H TO CLOSE", &showControls_, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove)) {
+    customUi_.drawContents(benchmark.running);
+    ImGui::SeparatorText("240-frame benchmark");
+    startBenchmark = drawBenchmarkSection(benchmark);
+  }
   ImGui::End();
   return startBenchmark;
 }
