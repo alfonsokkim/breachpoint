@@ -71,3 +71,18 @@ TEST_CASE("Invalid shot inputs do not produce hits") {
     REQUIRE_FALSE(resolveShot(kRay, {}, {boxAt(2)}, range));
   }
 }
+
+TEST_CASE("Resolved normals face out of the entry surface on every axis") {
+  const Aabb box{{-1, -1, -1}, {1, 1, 1}};
+  for (int axis = 0; axis < 3; ++axis) {
+    for (float sign : {-1.0F, 1.0F}) {
+      glm::vec3 origin(0), direction(0), expected(0);
+      origin[axis] = sign * 3;
+      direction[axis] = -sign;
+      expected[axis] = sign;
+      const auto hit = resolveShot({origin, direction}, {box}, {});
+      REQUIRE(hit);
+      REQUIRE(hit->normal == expected);
+    }
+  }
+}

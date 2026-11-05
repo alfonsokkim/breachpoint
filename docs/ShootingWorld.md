@@ -37,6 +37,25 @@ together without recreating the mesh buffers.
 `resolveShot` compares the nearest character-part hit with the nearest solid
 voxel hit. A nearer solid blocks the target, and solids win equal-distance
 ties. `ShotHit::kind` identifies which vector owns the returned index.
+`ShotHit::normal` is the outward entry-face normal. A zero-distance hit starts
+inside or on a box and does not emit impact dust.
+
+## Shot particles
+
+Accepted shots emit six warm muzzle sparks. A resolved hit also emits twelve
+grey target particles or brown block particles at the hit position, offset
+0.025 units along the entry normal. Misses produce no impact burst. The wall
+demo therefore emits dust on the nearer wall, never on the hidden target.
+
+`ShotParticles` uses elapsed seconds for motion, gravity and fading. Each
+particle lasts approximately 0.3 to 0.8 seconds, and the system keeps at most
+128 live particles. A bounded segment query removes particles before they
+cross solid geometry. Expired particles are removed and resets clear them.
+
+The renderer batches all live particles and the flash into one point draw.
+The maximum is 129 points including the flash, with no extra triangles. The
+benchmark clears and disables both effects, using the workload name
+`voxel-hut-character-and-weapon` to distinguish this scene from earlier runs.
 
 ## Check it
 
@@ -63,8 +82,11 @@ The benchmark resets and disables the flash; its workload includes the gun.
 4. Press T and click again. The exposed head is hittable again at 3.75 units.
 5. Release the mouse. Clicking the controls must not fire or switch the demo.
 6. The benchmark resets the outside target and spawn, clears shot feedback and
-   disables firing and the demo switch.
+   particles, and disables firing and the demo switch.
+7. Shoot a target or wall and watch the dust fade. After a pause the panel
+   should return to zero effect points and nine scene draw calls.
 
 Target health, deaths, civilian labels/penalties, timer and difficulty remain
-gameplay integration work. Muzzle sparks and impact dust are the next
-increment on this branch.
+gameplay integration work. Jason can route `ShotHit::kind` and its part index
+into target health or civilian rules; the current demo does neither. T is a
+demo reset control, not enemy movement or behaviour.

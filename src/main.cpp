@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <iostream>
 #include <optional>
+#include <vector>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -18,6 +19,7 @@
 #include "core/MuzzleFlash.h"
 #include "core/PlayerMovement.h"
 #include "core/Shooting.h"
+#include "core/ShotParticles.h"
 #include "core/SpatialQueries.h"
 #include "graphics/Character.h"
 #include "graphics/Chunk.h"
@@ -32,7 +34,7 @@ namespace {
 
 constexpr int kInitialWidth = 1280;
 constexpr int kInitialHeight = 720;
-constexpr const char* kWorldWorkload = "voxel-hut-and-character";
+constexpr const char* kWorldWorkload = "voxel-hut-character-and-weapon";
 
 craft::core::Camera spawnCamera(bool targetInsideHut = false) {
   craft::core::Camera camera({11.5F, 6.6F, 19.5F});
@@ -61,7 +63,7 @@ void printBenchmarkResult(const craft::app::BenchmarkSnapshot& result,
             << " average_fps=" << result.averageFramesPerSecond
             << " resolution=" << framebufferWidth << 'x' << framebufferHeight
             << " workload=" << kWorldWorkload << '\n'
-            << "benchmark_note=demo hut and character; "
+            << "benchmark_note=demo hut, character and weapon; "
                "no optimisation comparison yet\n";
 }
 
@@ -90,6 +92,9 @@ int main() {
     craft::app::SceneBenchmark benchmark;
     craft::core::FireControl fireControl;
     craft::core::MuzzleFlash muzzleFlash;
+    craft::core::ShotParticles particles;
+    std::vector<craft::graphics::EffectPoint> effectPoints;
+    effectPoints.reserve(craft::core::ShotParticles::kCapacity + 1);
     std::optional<craft::core::ShotHit> lastShotHit;
     unsigned int shotsFired = 0;
     float feedbackSeconds = 0.0F;
@@ -106,6 +111,7 @@ int main() {
       feedbackSeconds = 0.0F;
       lastShotObstructed = false;
       muzzleFlash.reset();
+      particles.clear();
     };
 
     const bool commandLineBenchmark =
@@ -138,6 +144,7 @@ int main() {
         controller.releaseMouse();
         (void)fireControl.update(0.0F, false, false);
         muzzleFlash.reset();
+        particles.clear();
         window.swapBuffers();
         continue;
       }
@@ -147,6 +154,7 @@ int main() {
         controller.releaseMouse();
         (void)fireControl.update(0.0F, false, false);
         muzzleFlash.reset();
+        particles.clear();
         window.swapBuffers();
         continue;
       }
@@ -176,6 +184,9 @@ int main() {
       }
       feedbackSeconds = std::max(0.0F, feedbackSeconds - deltaSeconds);
       muzzleFlash.update(deltaSeconds);
+      if (!benchmarkState.running) {
+        particles.update(deltaSeconds, chunk.getSolidBounds());
+      }
       if (fireControl.update(deltaSeconds, triggerPressed, shootingEnabled)) {
         lastShotHit = craft::core::resolveShot(
             camera.ray(), chunk.getSolidBounds(), steve.getHitBounds());
@@ -187,6 +198,9 @@ int main() {
         ++shotsFired;
         feedbackSeconds = 0.15F;
         muzzleFlash.trigger();
+        particles.emitMuzzle(craft::core::muzzlePosition(camera.ray(),
+            chunk.getSolidBounds()), camera.forward());
+        if (lastShotHit) particles.emitImpact(*lastShotHit);
       }
       appUi.beginFrame(controller.mouseCaptured());
       const auto hit = craft::core::nearestBoxHit(camera.ray(), chunk.getSolidBounds());
@@ -197,7 +211,8 @@ int main() {
                             chunk.getFaceCount(), lastShotHit,
                             shotsFired, feedbackSeconds,
                             targetInsideHut, lastShotObstructed,
-                            !benchmarkState.running && muzzleFlash.intensity() > 0.0F ? 1 : 0});
+                            static_cast<int>(particles.live().size()) +
+                            (!benchmarkState.running && muzzleFlash.intensity() > 0.0F ? 1 : 0)});
       if (appUi.draw(benchmarkState) && !benchmarkState.running) {
         targetInsideHut = false;
         resetShootingDemo();
@@ -233,10 +248,19 @@ int main() {
       chunk.draw();
       steve.draw(shader);
       weapon.draw(shader, craft::core::weaponFrame(camera.ray()));
-      if (flashIntensity > 0.0F) {
-        pointEffects.draw({{muzzle, {1.0F, 0.85F, 0.45F, flashIntensity},
-                            0.22F, 1.0F}}, camera.viewProjection(aspect), framebufferHeight);
+      effectPoints.clear();
+      if (!benchmark.snapshot().running) {
+        for (const auto& particle : particles.live()) {
+          auto colour = particle.colour;
+          colour.a *= particle.remaining / particle.lifetime;
+          effectPoints.push_back({particle.position, colour, particle.size, 0});
+        }
+        if (flashIntensity > 0.0F) {
+          effectPoints.push_back({muzzle, {1.0F, 0.85F, 0.45F, flashIntensity},
+                                  0.22F, 1.0F});
+        }
       }
+      pointEffects.draw(effectPoints, camera.viewProjection(aspect), framebufferHeight);
 
       const bool benchmarkCompleted = benchmark.endSceneFrame();
       if (benchmarkCompleted) {

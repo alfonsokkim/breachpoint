@@ -13,6 +13,7 @@ struct ShotHit {
   std::size_t index;
   float distance;
   glm::vec3 position;
+  glm::vec3 normal;
 };
 
 // Resolves a hitscan shot in world units; solids win equal-distance ties.

@@ -87,6 +87,7 @@ distance. Steve's hitboxes use the same six part transforms as his mesh.
 This is hit detection only; health and death reactions remain separate work.
 T switches between the exposed target and the wall-blocked hut setup, resetting
 the aim. Each accepted shot adds a 0.12-second barrel flash and warm light pulse.
+Muzzle sparks and impact dust fade out; moving particles stop at solid blocks.
 See [ShootingWorld.md](docs/ShootingWorld.md) for the query contract and demo steps.
 
 ## Start screen
@@ -154,9 +155,10 @@ The start screen is **skipped** for the environment-triggered run (`CRAFT_BENCHM
 The benchmark disables VSync, performs 60 warm-up frames, measures exactly 240 scene frames with GPU completion synchronisation, prints `average_ms`, then restores
 VSync, and excludes Dear ImGui and buffer swap. An environment-triggered run closes automatically after printing its result.
 
-The current result is labelled `workload=voxel-hut-and-character`. It measures
-the demo map and character from the same spawn camera each time, with input
-disabled. It is not an optimisation comparison or final game-performance result.
+The current result is labelled `workload=voxel-hut-character-and-weapon`. It
+measures the demo map, character and weapon from the same spawn camera each
+time, with input and firing effects disabled. It is not an optimisation
+comparison or final game-performance result.
 
 When improving performance, consider how mesh generation and draw-call count
 affect the result. Use the benchmark to compare approaches; no specific
