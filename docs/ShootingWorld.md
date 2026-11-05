@@ -8,6 +8,8 @@ shooting demo is added in its own commit so it can be reviewed separately.
 Enter starts the scene. Tab captures/releases the mouse. WASD moves and the
 mouse aims. Left click fires while captured; holding it does not repeat fire.
 The minimum firing interval is 0.25 seconds and the range is 50 world units.
+While captured, T switches between the clear and wall-blocked demonstrations,
+resetting the camera, target position, shot count and feedback.
 
 The spawn faces Steve's head. A target hit briefly makes the crosshair green;
 a solid hit makes it amber; a miss makes it red. The panel records the part or
@@ -29,6 +31,8 @@ For example, Steve's head is 8 x 8 x 8 skin pixels. With the model scaled by
 1/16 and placed at feet `(11.5, 5, 15.5)`, its bounds are
 `(11.25, 6.5, 15.25)` to `(11.75, 7, 15.75)`. The spawn ray hits that head at
 3.75 units. The box vector is cached rather than rebuilt every frame.
+`Character::setFeetPosition` updates the root transform and cached bounds
+together without recreating the mesh buffers.
 
 `resolveShot` compares the nearest character-part hit with the nearest solid
 voxel hit. A nearer solid blocks the target, and solids win equal-distance
@@ -39,10 +43,15 @@ ties. `ShotHit::kind` identifies which vector owns the returned index.
 1. Start, capture the mouse and click without moving the aim. The panel should
    report target part 1 at 3.75 units.
 2. Hold the button. Only one shot should be added.
-3. Aim at the hut and fire. The panel should report a block hit.
-4. Release the mouse. Clicking the controls must not fire.
-5. The benchmark clears shot feedback, resets the spawn and disables firing.
+3. Press T and click. Steve is now inside the hut. The shot hits a real wall
+   block at about 2.13 units, before the torso. The panel reports that a target
+   was behind the nearer wall. This uses a target-only ray query to confirm
+   the obstruction rather than assuming it from the demo label.
+4. Press T and click again. The exposed head is hittable again at 3.75 units.
+5. Release the mouse. Clicking the controls must not fire or switch the demo.
+6. The benchmark resets the outside target and spawn, clears shot feedback and
+   disables firing and the demo switch.
 
 Target health, deaths, civilian labels/penalties, timer and difficulty remain
-gameplay integration work. The wall-blocking demonstration and firing effects
-are the next increments on this branch.
+gameplay integration work. Firing effects are the next increments on this
+branch.

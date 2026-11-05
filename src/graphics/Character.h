@@ -31,6 +31,8 @@ class Character {
   // shader's uModel uniform per part.
   void draw(const Shader& shader) const;
 
+  void setFeetPosition(const glm::vec3& feetPosition);
+
   // Part bounds from the same model transforms used by draw().
   [[nodiscard]] const std::vector<core::Aabb>& getHitBounds() const noexcept {
     return hitBounds_;

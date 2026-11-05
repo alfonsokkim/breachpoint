@@ -29,6 +29,9 @@ void CustomUi::drawContents(bool interactionDisabled) {
   ImGui::SeparatorText("Shooting");
   ImGui::TextUnformatted("Left click: fire (mouse captured)");
   ImGui::TextUnformatted("Steve is the practice target");
+  ImGui::TextWrapped("T: switch clear / wall-blocked demo and reset aim");
+  ImGui::TextUnformatted(diagnostics_.targetInsideHut ?
+      "Demo: target inside hut" : "Demo: target outside hut");
   ImGui::TextWrapped("One shot per click, 0.25 s cooldown, 50 unit range");
   ImGui::Text("Shots fired: %u", diagnostics_.shotsFired);
   if (diagnostics_.shotsFired == 0) {
@@ -38,6 +41,9 @@ void CustomUi::drawContents(bool interactionDisabled) {
     ImGui::TextWrapped("Last shot: %s %zu at %.2f units",
         hit.kind == core::ShotHitKind::Target ? "target part" : "block",
         hit.index + 1, hit.distance);
+    if (diagnostics_.lastShotObstructed) {
+      ImGui::TextWrapped("Target behind wall: shot stopped by the nearer block");
+    }
   } else {
     ImGui::TextUnformatted("Last shot: miss");
   }

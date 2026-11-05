@@ -158,6 +158,12 @@ Character::~Character() {
   }
 }
 
+void Character::setFeetPosition(const glm::vec3& feetPosition) {
+  model_ = glm::scale(glm::translate(glm::mat4(1.0F), feetPosition),
+                      glm::vec3(1.0F / kPixelsPerBlock));
+  updateHitBounds();
+}
+
 void Character::updateHitBounds() {
   hitBounds_.clear();
   hitBounds_.reserve(kPartCount);

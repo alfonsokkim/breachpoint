@@ -5,6 +5,7 @@
 #include <glm/trigonometric.hpp>
 
 #include "core/BoxTransform.h"
+#include "core/Camera.h"
 #include "core/Shooting.h"
 
 using Catch::Approx;
@@ -51,4 +52,28 @@ TEST_CASE("The character head transform produces hittable world-space bounds") {
   REQUIRE(hit);
   REQUIRE(hit->kind == ShotHitKind::Target);
   REQUIRE(hit->distance == Approx(3.75F));
+}
+
+TEST_CASE("Moving the character into the hut puts its torso behind the wall") {
+  const auto torsoAt = [](glm::vec3 feet) {
+    const glm::mat4 root = glm::scale(glm::translate(glm::mat4(1), feet),
+                                     glm::vec3(1.0F / 16.0F));
+    return transformBounds({{0, 0, 0}, {8, 12, 4}},
+                            glm::translate(root, {-4, 12, -2}));
+  };
+  Camera camera({11.5F, 6.6F, 19.5F});
+  camera.look(45.0F, 15.0F);
+  const auto inside = torsoAt({15.5F, 5, 15.5F});
+  requireVector(inside.minimum, {15.25F, 5.75F, 15.375F});
+  requireVector(inside.maximum, {15.75F, 6.5F, 15.625F});
+  REQUIRE_FALSE(resolveShot(camera.ray(), {},
+                            {torsoAt({11.5F, 5, 15.5F})}));
+  const auto unobstructed = resolveShot(camera.ray(), {}, {inside});
+  REQUIRE(unobstructed);
+  REQUIRE(unobstructed->kind == ShotHitKind::Target);
+  const auto blocked = resolveShot(camera.ray(),
+      {{{13, 6, 17}, {14, 7, 18}}}, {inside});
+  REQUIRE(blocked);
+  REQUIRE(blocked->kind == ShotHitKind::Solid);
+  REQUIRE(blocked->distance < unobstructed->distance);
 }

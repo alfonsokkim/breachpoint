@@ -19,6 +19,8 @@ struct CameraDiagnostics {
   std::optional<core::ShotHit> lastShotHit;
   unsigned int shotsFired = 0;
   float feedbackSeconds = 0.0F;
+  bool targetInsideHut = false;
+  bool lastShotObstructed = false;
 };
 
 // Student-facing extension point for assignment-specific Dear ImGui controls.

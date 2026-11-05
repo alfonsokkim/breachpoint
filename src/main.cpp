@@ -31,9 +31,10 @@ constexpr int kInitialWidth = 1280;
 constexpr int kInitialHeight = 720;
 constexpr const char* kWorldWorkload = "voxel-hut-and-character";
 
-craft::core::Camera spawnCamera() {
+craft::core::Camera spawnCamera(bool targetInsideHut = false) {
   craft::core::Camera camera({11.5F, 6.6F, 19.5F});
-  camera.look(0.0F, 20.0F);
+  camera.look(targetInsideHut ? 45.0F : 0.0F,
+               targetInsideHut ? 15.0F : 20.0F);
   return camera;
 }
 
@@ -77,7 +78,7 @@ int main() {
     const craft::graphics::Texture steveSkin(
         craft::core::assetPath("textures/steve.png"),
         craft::graphics::Texture::Magnification::Nearest);
-    const craft::graphics::Character steve(steveSkin, {11.5F, 5.0F, 15.5F});
+    craft::graphics::Character steve(steveSkin, {11.5F, 5.0F, 15.5F});
     craft::core::Camera camera = spawnCamera();
     craft::app::CameraController controller(window, camera);
     craft::app::AppUi appUi(window);
@@ -86,6 +87,19 @@ int main() {
     std::optional<craft::core::ShotHit> lastShotHit;
     unsigned int shotsFired = 0;
     float feedbackSeconds = 0.0F;
+    bool targetInsideHut = false;
+    bool lastShotObstructed = false;
+    bool demoKeyWasDown = false;
+
+    const auto resetShootingDemo = [&] {
+      camera = spawnCamera(targetInsideHut);
+      steve.setFeetPosition({targetInsideHut ? 15.5F : 11.5F, 5.0F, 15.5F});
+      fireControl = craft::core::FireControl{};
+      lastShotHit.reset();
+      shotsFired = 0;
+      feedbackSeconds = 0.0F;
+      lastShotObstructed = false;
+    };
 
     const bool commandLineBenchmark =
         craft::app::benchmarkRequestedFromEnvironment();
@@ -105,6 +119,10 @@ int main() {
     while (!window.shouldClose()) {
       window.pollEvents();
       const bool triggerPressed = window.consumeLeftClick();
+      const bool demoKeyDown =
+          glfwGetKey(window.nativeHandle(), GLFW_KEY_T) == GLFW_PRESS;
+      const bool switchDemo = demoKeyDown && !demoKeyWasDown;
+      demoKeyWasDown = demoKeyDown;
       const double now = glfwGetTime();
       const float deltaSeconds = static_cast<float>(
           std::clamp(now - previousTime, 0.0, 0.1));
@@ -141,12 +159,21 @@ int main() {
                          appUi.wantsKeyboardInput());
       camera.setPosition(craft::core::movePlayer(
           previousPosition, camera.position(), chunk.getSolidBounds()));
+      const bool shootingEnabled = controller.mouseCaptured() &&
+          !benchmarkState.running && !appUi.wantsKeyboardInput();
+      if (switchDemo && shootingEnabled) {
+        targetInsideHut = !targetInsideHut;
+        resetShootingDemo();
+      }
       feedbackSeconds = std::max(0.0F, feedbackSeconds - deltaSeconds);
-      if (fireControl.update(deltaSeconds, triggerPressed,
-              controller.mouseCaptured() && !benchmarkState.running &&
-              !appUi.wantsKeyboardInput())) {
+      if (fireControl.update(deltaSeconds, triggerPressed, shootingEnabled)) {
         lastShotHit = craft::core::resolveShot(
             camera.ray(), chunk.getSolidBounds(), steve.getHitBounds());
+        const auto targetHit = craft::core::nearestBoxHit(
+            camera.ray(), steve.getHitBounds(), 50.0F);
+        lastShotObstructed = lastShotHit && targetHit &&
+            lastShotHit->kind == craft::core::ShotHitKind::Solid &&
+            lastShotHit->distance <= targetHit->t;
         ++shotsFired;
         feedbackSeconds = 0.15F;
       }
@@ -157,13 +184,12 @@ int main() {
                             controller.mouseCaptured(),
                             hit ? std::optional<float>(hit->t) : std::nullopt,
                             chunk.getFaceCount(), lastShotHit,
-                            shotsFired, feedbackSeconds});
+                            shotsFired, feedbackSeconds,
+                            targetInsideHut, lastShotObstructed});
       if (appUi.draw(benchmarkState) && !benchmarkState.running) {
+        targetInsideHut = false;
+        resetShootingDemo();
         startBenchmark(window, benchmark, camera, controller);
-        fireControl = craft::core::FireControl{};
-        lastShotHit.reset();
-        shotsFired = 0;
-        feedbackSeconds = 0.0F;
         const auto resizedFramebuffer = window.framebufferSize();
         framebufferWidth = resizedFramebuffer.first;
         framebufferHeight = resizedFramebuffer.second;
