@@ -4,7 +4,7 @@
 
 namespace craft::graphics {
 
-// HDR scene target and a fullscreen dusk/night-vision presentation pass.
+// HDR scene target and a fullscreen dusk presentation pass.
 class ScenePost {
  public:
   ScenePost();
@@ -12,7 +12,7 @@ class ScenePost {
   ScenePost(const ScenePost&) = delete;
   ScenePost& operator=(const ScenePost&) = delete;
   void begin(int width, int height);
-  void present(bool nightVision, float seconds) const;
+  void present() const;
 
  private:
   Shader shader_;

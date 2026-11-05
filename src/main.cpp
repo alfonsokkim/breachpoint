@@ -105,7 +105,7 @@ int main() {
       window.pollEvents();
       const bool trigger = window.consumeLeftClick();
       std::array<bool, GLFW_KEY_LAST + 1> pressed{};
-      for (int key : {GLFW_KEY_R, GLFW_KEY_1, GLFW_KEY_2, GLFW_KEY_3, GLFW_KEY_N, GLFW_KEY_P, GLFW_KEY_B}) {
+      for (int key : {GLFW_KEY_R, GLFW_KEY_1, GLFW_KEY_2, GLFW_KEY_3, GLFW_KEY_P, GLFW_KEY_B}) {
         const bool down = glfwGetKey(window.nativeHandle(), key) == GLFW_PRESS;
         pressed[key] = down && !previousKeys[key]; previousKeys[key] = down;
       }
@@ -130,7 +130,6 @@ int main() {
         if (pressed[GLFW_KEY_1]) reset(core::Difficulty::Easy);
         if (pressed[GLFW_KEY_2]) reset(core::Difficulty::Normal);
         if (pressed[GLFW_KEY_3]) reset(core::Difficulty::Hard);
-        if (pressed[GLFW_KEY_N]) appUi.settings().nightVision = !appUi.settings().nightVision;
         if (pressed[GLFW_KEY_P]) appUi.settings().brdf = !appUi.settings().brdf;
         if (pressed[GLFW_KEY_B]) { startBenchmark(); measuring = true; }
       }
@@ -256,7 +255,7 @@ int main() {
       shader.setFloat("uMetallic", appUi.settings().metallic);
       weapon.draw(shader, core::weaponFrame(camera.ray()));
       pointEffects.draw(effects, camera.viewProjection(aspect), height);
-      post.present(appUi.settings().nightVision, measuring ? 0 : static_cast<float>(now));
+      post.present();
       const bool completed = benchmark.endSceneFrame();
       if (completed) std::cout << std::fixed << std::setprecision(4)
           << "benchmark_result sample_count=" << benchmark.snapshot().measuredFrames

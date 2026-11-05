@@ -16,7 +16,7 @@ patterns are built in the project; no Rainbow Six map or game assets are used.
 5. Move behind a pillar to break sight. Counterfire stops and exposure resets.
 6. Shoot a pillar to show the wall receiving the impact instead of a target
    behind it. Civilian targets also intercept bullets aimed through them.
-7. Press Tab to pause. H opens the settings panel. Press N to show night vision and P to compare lighting.
+7. Press Tab to pause. H opens the settings panel. Press P to compare lighting.
    The gun's roughness and metallic sliders provide a material comparison.
 8. Press R to return to a fresh round. Press B for the fixed benchmark.
 
@@ -56,7 +56,7 @@ Separate code reviews are clean after fixing startup culling, elapsed-time
 handling and shot ordering at the time limit.
 
 Live checks reached a full course clear and player death, recorded a civilian
-penalty, and checked pause, restart, difficulty, night vision and the B-key
+penalty, and checked pause, restart, difficulty and the B-key
 benchmark. The CLI benchmark completed 240 samples at 1920 x 1080, with a mean
 of 0.7541 ms/frame for this scene. This is a baseline, not an optimisation
 comparison. The screenshot export was also opened and checked.
@@ -73,7 +73,7 @@ found no actionable issues.
 Current: custom courtyard, tactical targets and civilian models, health,
 head/body hits, falling targets, exposure-based counterfire, difficulty,
 timer, pause, reset, win/loss HUD, floodlights, static world shadows,
-Cook-Torrance controls and night vision. The existing collision, shot queries,
+Cook-Torrance controls. The existing collision, shot queries,
 muzzle lighting and particles remain connected.
 
 The static shadow maps cover courtyard geometry. Moving targets do not cast

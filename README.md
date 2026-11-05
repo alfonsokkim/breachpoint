@@ -31,14 +31,13 @@ dependencies on the first build. Original setup notes and references are in
 | Left click | Fire once, with a 0.25-second cooldown |
 | R | Reset the round, targets, camera and effects |
 | 1 / 2 / 3 | Restart on easy / normal / hard |
-| N | Toggle grainy night vision |
 | P | Switch Cook-Torrance and Phong lighting |
 | H / F3 | Show or hide settings, controls and diagnostics |
 | B | Run the fixed 240-frame benchmark |
 | Esc | Quit |
 
-The gameplay HUD shows health, time, hostiles, civilian strikes, shot count
-and night-vision status. Exposure warnings show when an enemy has sight;
+The gameplay HUD shows health, time, hostiles, civilian strikes and shot count.
+Exposure warnings show when an enemy has sight;
 damage flashes at the screen edges and target hits show a hit marker.
 Settings and diagnostics are hidden by default.
 
@@ -72,7 +71,7 @@ The courtyard uses procedural concrete, brick and painted materials. Four
 spotlights have cached 1024-pixel shadow maps for the static world. Target
 gear includes a helmet and vest, and each hostile carries a basic rifle.
 Muzzle flashes and fading particles use one batched point draw. HDR rendering
-is tone-mapped before the optional night-vision pass; the HUD stays readable.
+is tone-mapped before the HUD is drawn.
 Cook-Torrance uses GGX, Smith masking and Schlick Fresnel.
 
 ```sh

@@ -32,7 +32,6 @@ struct CameraDiagnostics {
 };
 
 struct RenderSettings {
-  bool nightVision = false;
   bool brdf = true;
   float roughness = 0.3F;
   float metallic = 0.75F;

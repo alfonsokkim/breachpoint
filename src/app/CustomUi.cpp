@@ -98,13 +98,10 @@ void CustomUi::drawHud(const BenchmarkSnapshot& benchmark) {
         r.health > i * 10 ? healthColour : IM_COL32(80, 94, 100, 100));
   }
   const float weaponX = screen.x - margin - 174 * s;
-  panel(draw, {weaponX, bottom - 64 * s}, {174 * s, 64 * s});
-  text(draw, {weaponX + 12 * s, bottom - 53 * s}, 11 * s, kGold, "SEMI / 50 M");
+  panel(draw, {weaponX, bottom - 46 * s}, {174 * s, 46 * s});
+  text(draw, {weaponX + 12 * s, bottom - 35 * s}, 11 * s, kGold, "SEMI / 50 M");
   std::snprintf(value, sizeof(value), "SHOTS FIRED  %03d", r.shots);
-  text(draw, {weaponX + 12 * s, bottom - 34 * s}, 11 * s, kWhite, value);
-  text(draw, {weaponX + 12 * s, bottom - 16 * s}, 9 * s,
-       settings_.nightVision ? IM_COL32(135, 225, 165, 255) : kMuted,
-       settings_.nightVision ? "NVG ON  [N]" : "NVG OFF  [N]");
+  text(draw, {weaponX + 12 * s, bottom - 16 * s}, 11 * s, kWhite, value);
   centred(draw, cx, bottom - 13 * s, 10 * s, kMuted, "TAB PAUSE   R RESTART   H CONTROLS");
 
   const bool playing = r.state == core::RoundState::Playing && diagnostics_.mouseCaptured;
@@ -165,11 +162,10 @@ void CustomUi::drawContents(bool frozen) {
   ImGui::TextUnformatted("WASD + mouse: move / aim");
   ImGui::TextUnformatted("Left click: fire   R: restart");
   ImGui::TextUnformatted("1 / 2 / 3: easy / normal / hard");
-  ImGui::TextUnformatted("N: night vision   P: BRDF");
+  ImGui::TextUnformatted("P: BRDF");
   ImGui::TextUnformatted("B: benchmark   H / F3: controls");
   ImGui::BeginDisabled(frozen);
   ImGui::SeparatorText("Rendering");
-  ImGui::Checkbox("Night vision", &settings_.nightVision);
   ImGui::Checkbox("Cook-Torrance BRDF", &settings_.brdf);
   ImGui::SetNextItemWidth(135);
   ImGui::SliderFloat("Roughness", &settings_.roughness, 0.08F, 1);

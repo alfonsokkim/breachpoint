@@ -38,12 +38,11 @@ void ScenePost::begin(int width, int height) {
   glClearColor(0, 0, 0, 0); glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void ScenePost::present(bool nightVision, float seconds) const {
+void ScenePost::present() const {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glViewport(0, 0, width_, height_);
   glDisable(GL_DEPTH_TEST); glDisable(GL_CULL_FACE);
   shader_.use(); shader_.setInt("uScene", 0);
-  shader_.setInt("uNightVision", nightVision); shader_.setFloat("uTime", seconds);
   glActiveTexture(GL_TEXTURE0); glBindTexture(GL_TEXTURE_2D, colour_);
   glBindVertexArray(vertexArray_); glDrawArrays(GL_TRIANGLES, 0, 3);
   glEnable(GL_DEPTH_TEST); glEnable(GL_CULL_FACE);
