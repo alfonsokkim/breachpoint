@@ -21,7 +21,7 @@ class Character {
  public:
   // `skin` uses the 64x64 Minecraft skin layout and must outlive this
   // character. `feetPosition` is the point on the ground between the feet.
-  Character(const Texture& skin, const glm::vec3& feetPosition);
+  Character(const Texture& skin, const glm::vec3& feetPosition, bool tactical = false);
   ~Character();
 
   Character(const Character&) = delete;
@@ -32,6 +32,8 @@ class Character {
   void draw(const Shader& shader) const;
 
   void setFeetPosition(const glm::vec3& feetPosition);
+  void setPose(const glm::vec3& feetPosition, float yawDegrees, float fall);
+  [[nodiscard]] std::size_t partCount() const { return partCount_; }
 
   // Part bounds from the same model transforms used by draw().
   [[nodiscard]] const std::vector<core::Aabb>& getHitBounds() const noexcept {
@@ -44,11 +46,13 @@ class Character {
     unsigned int firstIndex;
   };
 
-  static constexpr std::size_t kPartCount = 6;
+  static constexpr std::size_t kPartCount = 8;
 
   void updateHitBounds();
 
   const Texture& skin_;
+  bool tactical_ = false;
+  std::size_t partCount_ = 6;
   glm::mat4 model_;
   std::array<Part, kPartCount> parts_{};
   std::vector<core::Aabb> hitBounds_;

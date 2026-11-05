@@ -41,6 +41,15 @@ Weapon::~Weapon() {
   glDeleteVertexArrays(1, &vertexArray_);
 }
 
+void Weapon::drawBox(const Shader& shader, const glm::mat4& model, glm::vec3 colour) const {
+  shader.setInt("uTextured", 0);
+  shader.setInt("uVertexColour", 0);
+  shader.setVec3("uTint", colour);
+  shader.setMat4("uModel", model);
+  glBindVertexArray(vertexArray_);
+  glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
 void Weapon::draw(const Shader& shader, const glm::mat4& frame) const {
   shader.setInt("uTextured", 0);
   shader.setVec3("uTint", {0.16F, 0.18F, 0.20F});

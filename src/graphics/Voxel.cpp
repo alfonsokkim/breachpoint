@@ -83,9 +83,19 @@ VoxelFace makeVoxelFace(BlockType type, FaceDirection direction,
 
   const glm::vec3 offset(position);
   const glm::vec3 normal(face.normal);
+  glm::vec3 colour(1);
+  switch (type) {
+    case BlockType::Concrete: colour = {0.31F, 0.34F, 0.37F}; break;
+    case BlockType::TrainingWall: colour = {0.29F, 0.19F, 0.15F}; break;
+    case BlockType::TrainingCover: colour = {0.14F, 0.21F, 0.27F}; break;
+    case BlockType::Yellow: colour = {0.95F, 0.66F, 0.13F}; break;
+    case BlockType::Red: colour = {0.55F, 0.12F, 0.10F}; break;
+    case BlockType::Blue: colour = {0.12F, 0.20F, 0.25F}; break;
+    default: break;
+  }
   VoxelFace result{};
   for (std::size_t i = 0; i < result.vertices.size(); ++i) {
-    result.vertices[i] = {face.corners[i] + offset, uvs[i], normal};
+    result.vertices[i] = {face.corners[i] + offset, uvs[i], normal, colour};
   }
   return result;
 }

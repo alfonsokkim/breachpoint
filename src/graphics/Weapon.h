@@ -14,6 +14,7 @@ class Weapon {
   Weapon(const Weapon&) = delete;
   Weapon& operator=(const Weapon&) = delete;
   void draw(const Shader& shader, const glm::mat4& frame) const;
+  void drawBox(const Shader& shader, const glm::mat4& model, glm::vec3 colour) const;
 
  private:
   unsigned int vertexArray_ = 0;

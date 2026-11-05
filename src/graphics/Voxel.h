@@ -15,6 +15,12 @@ enum class BlockType : std::uint8_t {
   Dirt,
   Cobblestone,
   Wood,
+  Concrete,
+  TrainingWall,
+  TrainingCover,
+  Yellow,
+  Red,
+  Blue,
 };
 
 // The six sides of a block, named by the axis their outward normal points to.
@@ -37,6 +43,7 @@ struct VoxelVertex {
   glm::vec3 position;
   glm::vec2 uv;
   glm::vec3 normal;
+  glm::vec3 colour{1.0F};
 };
 
 // A single square block face, split into two counter-clockwise triangles.

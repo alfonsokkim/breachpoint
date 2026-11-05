@@ -5,6 +5,8 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
+#include <glm/trigonometric.hpp>
+#include <glm/gtc/constants.hpp>
 
 #include "graphics/OpenGL.h"
 #include "graphics/Voxel.h"
@@ -28,7 +30,7 @@ struct PartLayout {
   glm::vec2 skinOrigin;
 };
 
-constexpr std::array<PartLayout, 6> kPartLayouts = {{
+constexpr std::array<PartLayout, 8> kPartLayouts = {{
     // clang-format off
     {{-4, 24, -4}, {8,  8, 8}, { 0,  0}},  // head
     {{-4, 12, -2}, {8, 12, 4}, {16, 16}},  // torso
@@ -36,6 +38,8 @@ constexpr std::array<PartLayout, 6> kPartLayouts = {{
     {{-8, 12, -2}, {4, 12, 4}, {40, 16}},  // right arm
     {{ 0,  0, -2}, {4, 12, 4}, {16, 48}},  // left leg
     {{-4,  0, -2}, {4, 12, 4}, { 0, 16}},  // right leg
+    {{-4.5F, 29, -4.5F}, {9, 4, 9}, {0, 0}},
+    {{-4.5F, 12, -2.5F}, {9, 11, 5}, {16, 16}},
     // clang-format on
 }};
 
@@ -102,15 +106,16 @@ void appendBox(const PartLayout& layout, std::vector<VoxelVertex>& vertices,
 
 }  // namespace
 
-Character::Character(const Texture& skin, const glm::vec3& feetPosition)
+Character::Character(const Texture& skin, const glm::vec3& feetPosition, bool tactical)
     : skin_(skin),
+      tactical_(tactical), partCount_(tactical ? 8 : 6),
       model_(glm::scale(glm::translate(glm::mat4(1.0F), feetPosition),
                         glm::vec3(1.0F / kPixelsPerBlock))) {
   static_assert(kPartLayouts.size() == kPartCount);
 
   std::vector<VoxelVertex> vertices;
   std::vector<unsigned int> indices;
-  for (std::size_t i = 0; i < kPartCount; ++i) {
+  for (std::size_t i = 0; i < partCount_; ++i) {
     parts_[i] = {glm::translate(glm::mat4(1.0F), kPartLayouts[i].offset),
                  static_cast<unsigned int>(indices.size())};
     appendBox(kPartLayouts[i], vertices, indices);
@@ -164,10 +169,18 @@ void Character::setFeetPosition(const glm::vec3& feetPosition) {
   updateHitBounds();
 }
 
+void Character::setPose(const glm::vec3& feetPosition, float yawDegrees, float fall) {
+  model_ = glm::translate(glm::mat4(1), feetPosition);
+  model_ = glm::rotate(model_, glm::radians(yawDegrees), {0, 1, 0});
+  model_ = glm::rotate(model_, -fall * glm::half_pi<float>(), {1, 0, 0});
+  model_ = glm::scale(model_, glm::vec3(1.0F / kPixelsPerBlock));
+  updateHitBounds();
+}
+
 void Character::updateHitBounds() {
   hitBounds_.clear();
   hitBounds_.reserve(kPartCount);
-  for (std::size_t i = 0; i < kPartCount; ++i) {
+  for (std::size_t i = 0; i < partCount_; ++i) {
     hitBounds_.push_back(core::transformBounds(
         {glm::vec3(0), kPartLayouts[i].size}, model_ * parts_[i].model));
   }
@@ -176,7 +189,14 @@ void Character::updateHitBounds() {
 void Character::draw(const Shader& shader) const {
   skin_.bind(0);
   glBindVertexArray(vertexArray_);
-  for (const Part& part : parts_) {
+  for (std::size_t i = 0; i < partCount_; ++i) {
+    const Part& part = parts_[i];
+    const glm::vec3 colour = tactical_ ?
+        (i == 0 || i >= 6 ? glm::vec3(0.075F, 0.09F, 0.075F) :
+                            glm::vec3(0.22F, 0.25F, 0.16F)) :
+        (i == 0 || i == 2 || i == 3 ? glm::vec3(0.56F, 0.40F, 0.29F) :
+         i == 1 ? glm::vec3(0.12F, 0.40F, 0.68F) : glm::vec3(0.12F, 0.17F, 0.22F));
+    shader.setVec3("uTint", colour);
     shader.setMat4("uModel", model_ * part.model);
     glDrawElements(GL_TRIANGLES, kIndicesPerBox, GL_UNSIGNED_INT,
                    reinterpret_cast<const void*>(part.firstIndex *
