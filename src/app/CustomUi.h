@@ -4,6 +4,8 @@
 
 #include <glm/vec3.hpp>
 
+#include "core/Shooting.h"
+
 namespace craft::app {
 
 struct CameraDiagnostics {
@@ -14,6 +16,9 @@ struct CameraDiagnostics {
   bool mouseCaptured = false;
   std::optional<float> solidHitDistance;
   int worldFaces = 0;
+  std::optional<core::ShotHit> lastShotHit;
+  unsigned int shotsFired = 0;
+  float feedbackSeconds = 0.0F;
 };
 
 // Student-facing extension point for assignment-specific Dear ImGui controls.

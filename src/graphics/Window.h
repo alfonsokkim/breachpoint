@@ -25,6 +25,9 @@ class Window {
   // Processes input and window events, including ESC to close.
   void pollEvents();
 
+  // Consumes left-button press events, including clicks released between frames.
+  [[nodiscard]] bool consumeLeftClick();
+
   // Controls presentation timing. Benchmarks should disable VSync while
   // measuring scene rendering and restore it afterwards.
   void setVSync(bool enabled);
@@ -47,6 +50,7 @@ class Window {
 
  private:
   GLFWwindow* handle_ = nullptr;
+  bool leftClickPending_ = false;
 };
 
 }  // namespace craft::graphics

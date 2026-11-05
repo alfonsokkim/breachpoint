@@ -14,7 +14,9 @@
 #include "app/TitleScreen.h"
 #include "core/AssetPath.h"
 #include "core/Camera.h"
+#include "core/FireControl.h"
 #include "core/PlayerMovement.h"
+#include "core/Shooting.h"
 #include "core/SpatialQueries.h"
 #include "graphics/Character.h"
 #include "graphics/Chunk.h"
@@ -80,6 +82,10 @@ int main() {
     craft::app::CameraController controller(window, camera);
     craft::app::AppUi appUi(window);
     craft::app::SceneBenchmark benchmark;
+    craft::core::FireControl fireControl;
+    std::optional<craft::core::ShotHit> lastShotHit;
+    unsigned int shotsFired = 0;
+    float feedbackSeconds = 0.0F;
 
     const bool commandLineBenchmark =
         craft::app::benchmarkRequestedFromEnvironment();
@@ -98,12 +104,14 @@ int main() {
 
     while (!window.shouldClose()) {
       window.pollEvents();
+      const bool triggerPressed = window.consumeLeftClick();
       const double now = glfwGetTime();
       const float deltaSeconds = static_cast<float>(
           std::clamp(now - previousTime, 0.0, 0.1));
       previousTime = now;
       if (glfwGetWindowAttrib(window.nativeHandle(), GLFW_ICONIFIED)) {
         controller.releaseMouse();
+        (void)fireControl.update(0.0F, false, false);
         window.swapBuffers();
         continue;
       }
@@ -111,6 +119,7 @@ int main() {
       auto [framebufferWidth, framebufferHeight] = window.framebufferSize();
       if (framebufferWidth == 0 || framebufferHeight == 0) {
         controller.releaseMouse();
+        (void)fireControl.update(0.0F, false, false);
         window.swapBuffers();
         continue;
       }
@@ -132,15 +141,28 @@ int main() {
                          appUi.wantsKeyboardInput());
       camera.setPosition(craft::core::movePlayer(
           previousPosition, camera.position(), chunk.getSolidBounds()));
+      feedbackSeconds = std::max(0.0F, feedbackSeconds - deltaSeconds);
+      if (fireControl.update(deltaSeconds, triggerPressed,
+              controller.mouseCaptured() && !benchmarkState.running &&
+              !appUi.wantsKeyboardInput())) {
+        lastShotHit = craft::core::resolveShot(camera.ray(), chunk.getSolidBounds(), {});
+        ++shotsFired;
+        feedbackSeconds = 0.15F;
+      }
       appUi.beginFrame(controller.mouseCaptured());
       const auto hit = craft::core::nearestBoxHit(camera.ray(), chunk.getSolidBounds());
       appUi.setDiagnostics({camera.position(), camera.forward(),
                             camera.yawDegrees(), camera.pitchDegrees(),
                             controller.mouseCaptured(),
                             hit ? std::optional<float>(hit->t) : std::nullopt,
-                            chunk.getFaceCount()});
+                            chunk.getFaceCount(), lastShotHit,
+                            shotsFired, feedbackSeconds});
       if (appUi.draw(benchmarkState) && !benchmarkState.running) {
         startBenchmark(window, benchmark, camera, controller);
+        fireControl = craft::core::FireControl{};
+        lastShotHit.reset();
+        shotsFired = 0;
+        feedbackSeconds = 0.0F;
         const auto resizedFramebuffer = window.framebufferSize();
         framebufferWidth = resizedFramebuffer.first;
         framebufferHeight = resizedFramebuffer.second;

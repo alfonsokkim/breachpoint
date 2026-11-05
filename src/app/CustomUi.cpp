@@ -26,14 +26,34 @@ void CustomUi::drawContents(bool interactionDisabled) {
   ImGui::Text("Chunk faces: %d", diagnostics_.worldFaces);
   ImGui::Text("Scene triangles: %d", diagnostics_.worldFaces * 2 + 72);
   ImGui::TextUnformatted("Scene draw calls: 7");
+  ImGui::SeparatorText("Shooting");
+  ImGui::TextUnformatted("Left click: fire (mouse captured)");
+  ImGui::TextWrapped("One shot per click, 0.25 s cooldown, 50 unit range");
+  ImGui::Text("Shots fired: %u", diagnostics_.shotsFired);
+  if (diagnostics_.shotsFired == 0) {
+    ImGui::TextUnformatted("Last shot: none");
+  } else if (diagnostics_.lastShotHit) {
+    const auto& hit = *diagnostics_.lastShotHit;
+    ImGui::Text("Last shot: %s %zu at %.2f units",
+        hit.kind == core::ShotHitKind::Target ? "target part" : "block",
+        hit.index + 1, hit.distance);
+  } else {
+    ImGui::TextUnformatted("Last shot: miss");
+  }
 
   const ImVec2 size = ImGui::GetIO().DisplaySize;
   const ImVec2 centre(size.x * 0.5F, size.y * 0.5F);
+  ImU32 colour = IM_COL32_WHITE;
+  if (!interactionDisabled && diagnostics_.feedbackSeconds > 0.0F) {
+    colour = !diagnostics_.lastShotHit ? IM_COL32(255, 100, 100, 255) :
+        (diagnostics_.lastShotHit->kind == core::ShotHitKind::Target
+            ? IM_COL32(100, 255, 130, 255) : IM_COL32(255, 190, 70, 255));
+  }
   auto* foreground = ImGui::GetForegroundDrawList();
   foreground->AddLine(ImVec2(centre.x - 5, centre.y),
-                      ImVec2(centre.x + 5, centre.y), IM_COL32_WHITE);
+                      ImVec2(centre.x + 5, centre.y), colour);
   foreground->AddLine(ImVec2(centre.x, centre.y - 5),
-                      ImVec2(centre.x, centre.y + 5), IM_COL32_WHITE);
+                      ImVec2(centre.x, centre.y + 5), colour);
 }
 
 void CustomUi::setDiagnostics(const CameraDiagnostics& diagnostics) {

@@ -52,6 +52,14 @@ Window::Window(int width, int height, const std::string& title) {
 #endif
 
   glfwSetFramebufferSizeCallback(handle_, framebufferSizeCallback);
+  glfwSetWindowUserPointer(handle_, this);
+  glfwSetMouseButtonCallback(handle_,
+      [](GLFWwindow* window, int button, int action, int) {
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+          auto* owner = static_cast<Window*>(glfwGetWindowUserPointer(window));
+          owner->leftClickPending_ = true;
+        }
+      });
   // Wait for vertical refresh when swapping buffers to avoid visible tearing.
   setVSync(true);
 }
@@ -73,6 +81,10 @@ void Window::pollEvents() {
   if (glfwGetKey(handle_, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(handle_, GLFW_TRUE);
   }
+}
+
+bool Window::consumeLeftClick() {
+  return std::exchange(leftClickPending_, false);
 }
 
 void Window::setVSync(bool enabled) {

@@ -76,7 +76,12 @@ The platform edges stop movement so you cannot walk into empty space.
 The panel shows camera pose, the nearest solid block in your aim, actual chunk
 face/triangle counts and seven scene draw calls (chunk plus six character parts).
 This integration supports a flat floor; gravity, jumping, stairs and character
-collision remain later work. Shooting is still on its separate A3 branch.
+collision remain later work.
+
+Left click fires while the mouse is captured, with one shot per click, a
+0.25-second cooldown and a 50-unit range. The panel records world-block hits
+and misses. This first integration step reuses A3's firing and shot queries;
+the target connection and effects follow in separate commits.
 
 ## Start screen
 
