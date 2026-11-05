@@ -24,8 +24,9 @@ void CustomUi::drawContents(bool interactionDisabled) {
     ImGui::TextUnformatted("Block: none in aim");
   }
   ImGui::Text("Chunk faces: %d", diagnostics_.worldFaces);
-  ImGui::Text("Scene triangles: %d", diagnostics_.worldFaces * 2 + 72);
-  ImGui::TextUnformatted("Scene draw calls: 7");
+  ImGui::Text("Scene triangles: %d", diagnostics_.worldFaces * 2 + 96);
+  ImGui::Text("Scene draw calls: %d", 9 + (diagnostics_.effectPoints > 0 ? 1 : 0));
+  ImGui::Text("Effect points: %d", diagnostics_.effectPoints);
   ImGui::SeparatorText("Shooting");
   ImGui::TextUnformatted("Left click: fire (mouse captured)");
   ImGui::TextUnformatted("Steve is the practice target");

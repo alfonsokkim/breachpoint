@@ -15,15 +15,18 @@
 #include "core/AssetPath.h"
 #include "core/Camera.h"
 #include "core/FireControl.h"
+#include "core/MuzzleFlash.h"
 #include "core/PlayerMovement.h"
 #include "core/Shooting.h"
 #include "core/SpatialQueries.h"
 #include "graphics/Character.h"
 #include "graphics/Chunk.h"
 #include "graphics/OpenGL.h"
+#include "graphics/PointEffects.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "graphics/Window.h"
+#include "graphics/Weapon.h"
 
 namespace {
 
@@ -79,11 +82,14 @@ int main() {
         craft::core::assetPath("textures/steve.png"),
         craft::graphics::Texture::Magnification::Nearest);
     craft::graphics::Character steve(steveSkin, {11.5F, 5.0F, 15.5F});
+    const craft::graphics::Weapon weapon;
+    const craft::graphics::PointEffects pointEffects;
     craft::core::Camera camera = spawnCamera();
     craft::app::CameraController controller(window, camera);
     craft::app::AppUi appUi(window);
     craft::app::SceneBenchmark benchmark;
     craft::core::FireControl fireControl;
+    craft::core::MuzzleFlash muzzleFlash;
     std::optional<craft::core::ShotHit> lastShotHit;
     unsigned int shotsFired = 0;
     float feedbackSeconds = 0.0F;
@@ -99,6 +105,7 @@ int main() {
       shotsFired = 0;
       feedbackSeconds = 0.0F;
       lastShotObstructed = false;
+      muzzleFlash.reset();
     };
 
     const bool commandLineBenchmark =
@@ -130,6 +137,7 @@ int main() {
       if (glfwGetWindowAttrib(window.nativeHandle(), GLFW_ICONIFIED)) {
         controller.releaseMouse();
         (void)fireControl.update(0.0F, false, false);
+        muzzleFlash.reset();
         window.swapBuffers();
         continue;
       }
@@ -138,6 +146,7 @@ int main() {
       if (framebufferWidth == 0 || framebufferHeight == 0) {
         controller.releaseMouse();
         (void)fireControl.update(0.0F, false, false);
+        muzzleFlash.reset();
         window.swapBuffers();
         continue;
       }
@@ -166,6 +175,7 @@ int main() {
         resetShootingDemo();
       }
       feedbackSeconds = std::max(0.0F, feedbackSeconds - deltaSeconds);
+      muzzleFlash.update(deltaSeconds);
       if (fireControl.update(deltaSeconds, triggerPressed, shootingEnabled)) {
         lastShotHit = craft::core::resolveShot(
             camera.ray(), chunk.getSolidBounds(), steve.getHitBounds());
@@ -176,6 +186,7 @@ int main() {
             lastShotHit->distance <= targetHit->t;
         ++shotsFired;
         feedbackSeconds = 0.15F;
+        muzzleFlash.trigger();
       }
       appUi.beginFrame(controller.mouseCaptured());
       const auto hit = craft::core::nearestBoxHit(camera.ray(), chunk.getSolidBounds());
@@ -185,7 +196,8 @@ int main() {
                             hit ? std::optional<float>(hit->t) : std::nullopt,
                             chunk.getFaceCount(), lastShotHit,
                             shotsFired, feedbackSeconds,
-                            targetInsideHut, lastShotObstructed});
+                            targetInsideHut, lastShotObstructed,
+                            !benchmarkState.running && muzzleFlash.intensity() > 0.0F ? 1 : 0});
       if (appUi.draw(benchmarkState) && !benchmarkState.running) {
         targetInsideHut = false;
         resetShootingDemo();
@@ -208,8 +220,23 @@ int main() {
       shader.setMat4("uViewProjection", camera.viewProjection(aspect));
       shader.setMat4("uModel", chunk.getModel());
       shader.setInt("uTex", 0);
+      const glm::vec3 muzzle = craft::core::muzzlePosition(
+          camera.ray(), chunk.getSolidBounds());
+      const float flashIntensity = benchmark.snapshot().running ? 0.0F : muzzleFlash.intensity();
+      shader.setInt("uTextured", 1);
+      shader.setVec3("uTint", {1, 1, 1});
+      shader.setVec3("uEyePosition", camera.position());
+      shader.setVec3("uMuzzlePosition", muzzle);
+      shader.setFloat("uMuzzleIntensity", flashIntensity);
+      shader.setFloat("uSpecular", 0.08F);
+      shader.setFloat("uShininess", 16.0F);
       chunk.draw();
       steve.draw(shader);
+      weapon.draw(shader, craft::core::weaponFrame(camera.ray()));
+      if (flashIntensity > 0.0F) {
+        pointEffects.draw({{muzzle, {1.0F, 0.85F, 0.45F, flashIntensity},
+                            0.22F, 1.0F}}, camera.viewProjection(aspect), framebufferHeight);
+      }
 
       const bool benchmarkCompleted = benchmark.endSceneFrame();
       if (benchmarkCompleted) {

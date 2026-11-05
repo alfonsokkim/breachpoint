@@ -40,6 +40,19 @@ ties. `ShotHit::kind` identifies which vector owns the returned index.
 
 ## Check it
 
+Each accepted shot creates a 0.12-second muzzle flash and a warm point light.
+The simple weapon follows the camera. The flash sits just beyond its barrel;
+its position is clipped against the real solid boxes near walls. Shooting
+still uses the centre camera ray, so the weapon offset does not change aim.
+The world shader uses ambient, diffuse and specular terms with world-space
+positions and transformed normals. The barrel is shinier than the wood.
+This is basic lighting without shadow maps.
+
+The idle scene is 1,360 triangles and nine draw calls. The active flash adds
+one point sprite and one draw call. Point sprites use depth testing, no depth
+writes and alpha blending. The point-size range is clamped to the GPU limit.
+The benchmark resets and disables the flash; its workload includes the gun.
+
 1. Start, capture the mouse and click without moving the aim. The panel should
    report target part 1 at 3.75 units.
 2. Hold the button. Only one shot should be added.
@@ -53,5 +66,5 @@ ties. `ShotHit::kind` identifies which vector owns the returned index.
    disables firing and the demo switch.
 
 Target health, deaths, civilian labels/penalties, timer and difficulty remain
-gameplay integration work. Firing effects are the next increments on this
-branch.
+gameplay integration work. Muzzle sparks and impact dust are the next
+increment on this branch.

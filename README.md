@@ -74,7 +74,8 @@ movement slides along walls, and the player fits through the hut's doorway.
 The platform edges stop movement so you cannot walk into empty space.
 
 The panel shows camera pose, the nearest solid block in your aim, actual chunk
-face/triangle counts and seven scene draw calls (chunk plus six character parts).
+face/triangle counts and nine scene draw calls (chunk, six character parts
+and the two-box weapon). Firing effects add one batched point draw while active.
 This integration supports a flat floor; gravity, jumping, stairs and character
 collision remain later work.
 
@@ -84,6 +85,9 @@ or voxel stops the shot. The crosshair briefly turns green for a target hit,
 amber for a block, or red for a miss. The panel records the part/block and
 distance. Steve's hitboxes use the same six part transforms as his mesh.
 This is hit detection only; health and death reactions remain separate work.
+T switches between the exposed target and the wall-blocked hut setup, resetting
+the aim. Each accepted shot adds a 0.12-second barrel flash and warm light pulse.
+See [ShootingWorld.md](docs/ShootingWorld.md) for the query contract and demo steps.
 
 ## Start screen
 

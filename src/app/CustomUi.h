@@ -21,6 +21,7 @@ struct CameraDiagnostics {
   float feedbackSeconds = 0.0F;
   bool targetInsideHut = false;
   bool lastShotObstructed = false;
+  int effectPoints = 0;
 };
 
 // Student-facing extension point for assignment-specific Dear ImGui controls.
