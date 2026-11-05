@@ -2,12 +2,14 @@
 
 #include <array>
 #include <cstddef>
+#include <vector>
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
+#include "core/Ray.h"
 
 namespace craft::graphics {
 
@@ -29,6 +31,11 @@ class Character {
   // shader's uModel uniform per part.
   void draw(const Shader& shader) const;
 
+  // Part bounds from the same model transforms used by draw().
+  [[nodiscard]] const std::vector<core::Aabb>& getHitBounds() const noexcept {
+    return hitBounds_;
+  }
+
  private:
   struct Part {
     glm::mat4 model;
@@ -37,9 +44,12 @@ class Character {
 
   static constexpr std::size_t kPartCount = 6;
 
+  void updateHitBounds();
+
   const Texture& skin_;
   glm::mat4 model_;
   std::array<Part, kPartCount> parts_{};
+  std::vector<core::Aabb> hitBounds_;
   unsigned int vertexArray_ = 0;
   unsigned int vertexBuffer_ = 0;
   unsigned int indexBuffer_ = 0;

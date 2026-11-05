@@ -28,13 +28,14 @@ void CustomUi::drawContents(bool interactionDisabled) {
   ImGui::TextUnformatted("Scene draw calls: 7");
   ImGui::SeparatorText("Shooting");
   ImGui::TextUnformatted("Left click: fire (mouse captured)");
+  ImGui::TextUnformatted("Steve is the practice target");
   ImGui::TextWrapped("One shot per click, 0.25 s cooldown, 50 unit range");
   ImGui::Text("Shots fired: %u", diagnostics_.shotsFired);
   if (diagnostics_.shotsFired == 0) {
     ImGui::TextUnformatted("Last shot: none");
   } else if (diagnostics_.lastShotHit) {
     const auto& hit = *diagnostics_.lastShotHit;
-    ImGui::Text("Last shot: %s %zu at %.2f units",
+    ImGui::TextWrapped("Last shot: %s %zu at %.2f units",
         hit.kind == core::ShotHitKind::Target ? "target part" : "block",
         hit.index + 1, hit.distance);
   } else {

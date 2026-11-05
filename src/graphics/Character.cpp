@@ -8,6 +8,7 @@
 
 #include "graphics/OpenGL.h"
 #include "graphics/Voxel.h"
+#include "core/BoxTransform.h"
 
 namespace craft::graphics {
 
@@ -114,6 +115,7 @@ Character::Character(const Texture& skin, const glm::vec3& feetPosition)
                  static_cast<unsigned int>(indices.size())};
     appendBox(kPartLayouts[i], vertices, indices);
   }
+  updateHitBounds();
 
   glGenVertexArrays(1, &vertexArray_);
   glGenBuffers(1, &vertexBuffer_);
@@ -153,6 +155,15 @@ Character::~Character() {
   }
   if (vertexArray_ != 0) {
     glDeleteVertexArrays(1, &vertexArray_);
+  }
+}
+
+void Character::updateHitBounds() {
+  hitBounds_.clear();
+  hitBounds_.reserve(kPartCount);
+  for (std::size_t i = 0; i < kPartCount; ++i) {
+    hitBounds_.push_back(core::transformBounds(
+        {glm::vec3(0), kPartLayouts[i].size}, model_ * parts_[i].model));
   }
 }
 

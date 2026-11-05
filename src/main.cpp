@@ -33,7 +33,7 @@ constexpr const char* kWorldWorkload = "voxel-hut-and-character";
 
 craft::core::Camera spawnCamera() {
   craft::core::Camera camera({11.5F, 6.6F, 19.5F});
-  camera.look(45.0F, 15.0F);
+  camera.look(0.0F, 20.0F);
   return camera;
 }
 
@@ -145,7 +145,8 @@ int main() {
       if (fireControl.update(deltaSeconds, triggerPressed,
               controller.mouseCaptured() && !benchmarkState.running &&
               !appUi.wantsKeyboardInput())) {
-        lastShotHit = craft::core::resolveShot(camera.ray(), chunk.getSolidBounds(), {});
+        lastShotHit = craft::core::resolveShot(
+            camera.ray(), chunk.getSolidBounds(), steve.getHitBounds());
         ++shotsFired;
         feedbackSeconds = 0.15F;
       }

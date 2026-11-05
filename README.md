@@ -68,7 +68,7 @@ After Enter, press **Tab** to capture the mouse. Use **WASD** to walk on the
 horizontal plane and the **mouse** to look around. Press **Tab** again to use
 the controls panel. **Esc** closes the application.
 
-You spawn at `(11.5, 6.6, 19.5)` facing the hut. Your feet stay at the platform
+You spawn at `(11.5, 6.6, 19.5)` facing Steve. Your feet stay at the platform
 height of 5 units, with the camera 1.6 units above it. Walls stop you, diagonal
 movement slides along walls, and the player fits through the hut's doorway.
 The platform edges stop movement so you cannot walk into empty space.
@@ -79,9 +79,11 @@ This integration supports a flat floor; gravity, jumping, stairs and character
 collision remain later work.
 
 Left click fires while the mouse is captured, with one shot per click, a
-0.25-second cooldown and a 50-unit range. The panel records world-block hits
-and misses. This first integration step reuses A3's firing and shot queries;
-the target connection and effects follow in separate commits.
+0.25-second cooldown and a 50-unit range. The nearest visible character part
+or voxel stops the shot. The crosshair briefly turns green for a target hit,
+amber for a block, or red for a miss. The panel records the part/block and
+distance. Steve's hitboxes use the same six part transforms as his mesh.
+This is hit detection only; health and death reactions remain separate work.
 
 ## Start screen
 
