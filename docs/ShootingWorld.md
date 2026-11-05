@@ -1,5 +1,8 @@
 # Shooting on the voxel map
 
+This describes the earlier single-target prototype. The current courtyard
+controls and walkthrough are in [Demo.md](Demo.md).
+
 This branch builds on the camera/map integration in MR !4. Each part of the
 shooting demo is added in its own commit so it can be reviewed separately.
 
