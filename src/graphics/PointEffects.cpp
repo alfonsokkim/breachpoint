@@ -50,7 +50,7 @@ void PointEffects::draw(const std::vector<EffectPoint>& points,
   glGetIntegerv(GL_BLEND_DST_ALPHA, &dstAlpha);
   glEnable(GL_BLEND);
   glEnable(GL_PROGRAM_POINT_SIZE);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   glDepthMask(GL_FALSE);
   shader_.use();
   shader_.setMat4("uViewProjection", viewProjection);

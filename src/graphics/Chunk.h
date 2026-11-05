@@ -8,6 +8,7 @@
 #include "graphics/Texture.h"
 #include "graphics/Voxel.h"
 #include "core/Ray.h"
+#include "core/TrainingGround.h"
 
 namespace craft::graphics {
 
@@ -30,6 +31,7 @@ class Chunk {
 
   // Binds the atlas to texture unit 0 and draws the mesh.
   void draw() const;
+  void load(const core::TrainingGround& ground);
 
   [[nodiscard]] int getFaceCount() const noexcept { return faceCount_; }
 
@@ -41,9 +43,6 @@ class Chunk {
  private:
   using Blocks =
       std::array<std::array<std::array<BlockType, kSize>, kSize>, kSize>;
-
-  // Fills the chunk with a small grass platform and a wooden hut.
-  void seedDemoScene();
 
   // Builds the mesh from blocks_ and uploads it to the GPU.
   void buildMesh();

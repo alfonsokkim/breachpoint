@@ -14,6 +14,8 @@ AppUi::AppUi(graphics::Window& window) {
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGui::StyleColorsDark();
+  ImGui::GetStyle().WindowRounding = 0;
+  ImGui::GetStyle().FrameRounding = 0;
 
   if (!ImGui_ImplGlfw_InitForOpenGL(window.nativeHandle(), true)) {
     ImGui::DestroyContext();
@@ -45,10 +47,10 @@ void AppUi::beginFrame(bool mouseCaptured) {
 }
 
 bool AppUi::draw(const BenchmarkSnapshot& benchmark) {
-  constexpr float panelWidth = 280.0F;
+  constexpr float panelWidth = 300.0F;
   ImGui::SetNextWindowSize(ImVec2(panelWidth, 0.0F), ImGuiCond_Always);
   ImGui::SetNextWindowPos(ImVec2(10.0F, 10.0F), ImGuiCond_FirstUseEver);
-  ImGui::Begin("Craft controls", nullptr,
+  ImGui::Begin("BREACHPOINT / CONTROL", nullptr,
                ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize);
 
   customUi_.drawContents(benchmark.running);

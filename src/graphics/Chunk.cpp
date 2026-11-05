@@ -8,8 +8,7 @@
 namespace craft::graphics {
 
 Chunk::Chunk(const Texture& atlas) : atlas_(atlas) {
-  seedDemoScene();
-  buildMesh();
+  load(core::makeTrainingGround(0));
 }
 
 Chunk::~Chunk() {
@@ -34,35 +33,16 @@ void Chunk::draw() const {
   glDrawElements(GL_TRIANGLES, indexCount_, GL_UNSIGNED_INT, nullptr);
 }
 
-void Chunk::seedDemoScene() {
-  // 12x12 platform: two layers of cobblestone, two of dirt, grass on top.
-  for (int x = 10; x <= 21; ++x) {
-    for (int z = 10; z <= 21; ++z) {
-      for (int y = 0; y <= 4; ++y) {
-        if (y <= 1) {
-          blocks_[x][y][z] = BlockType::Cobblestone;
-        } else if (y <= 3) {
-          blocks_[x][y][z] = BlockType::Dirt;
-        } else {
-          blocks_[x][y][z] = BlockType::Grass;
-        }
-      }
-    }
+void Chunk::load(const core::TrainingGround& ground) {
+  blocks_ = {};
+  constexpr BlockType materials[] = {BlockType::Concrete, BlockType::TrainingWall,
+      BlockType::TrainingCover, BlockType::Yellow, BlockType::Red, BlockType::Blue};
+  for (const auto& block : ground.blocks) {
+    const auto p = block.cell;
+    if (p.x >= 0 && p.x < kSize && p.y >= 0 && p.y < kSize && p.z >= 0 && p.z < kSize)
+      blocks_[p.x][p.y][p.z] = materials[static_cast<int>(block.material)];
   }
-
-  // 5x5 hollow hut with a roof and a two-block doorway on its -x wall.
-  for (int x = 13; x <= 17; ++x) {
-    for (int z = 13; z <= 17; ++z) {
-      for (int y = 5; y <= 7; ++y) {
-        const bool wall = x == 13 || x == 17 || z == 13 || z == 17;
-        const bool roof = y == 7;
-        const bool doorway = x == 13 && z == 15 && !roof;
-        if ((wall || roof) && !doorway) {
-          blocks_[x][y][z] = BlockType::Wood;
-        }
-      }
-    }
-  }
+  buildMesh();
 }
 
 void Chunk::buildMesh() {
@@ -101,9 +81,9 @@ void Chunk::buildMesh() {
   indexCount_ = static_cast<int>(indices.size());
   faceCount_ = indexCount_ / static_cast<int>(VoxelFace::kIndices.size());
 
-  glGenVertexArrays(1, &vertexArray_);
-  glGenBuffers(1, &vertexBuffer_);
-  glGenBuffers(1, &indexBuffer_);
+  if (!vertexArray_) glGenVertexArrays(1, &vertexArray_);
+  if (!vertexBuffer_) glGenBuffers(1, &vertexBuffer_);
+  if (!indexBuffer_) glGenBuffers(1, &indexBuffer_);
 
   glBindVertexArray(vertexArray_);
   glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer_);
@@ -127,6 +107,9 @@ void Chunk::buildMesh() {
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride,
                         reinterpret_cast<const void*>(
                             offsetof(VoxelVertex, normal)));
+  glEnableVertexAttribArray(3);
+  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, stride,
+                        reinterpret_cast<const void*>(offsetof(VoxelVertex, colour)));
   glBindVertexArray(0);
 }
 

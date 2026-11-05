@@ -5,6 +5,7 @@
 #include <glm/vec3.hpp>
 
 #include "core/Shooting.h"
+#include "core/TrainingRound.h"
 
 namespace craft::app {
 
@@ -22,6 +23,17 @@ struct CameraDiagnostics {
   bool targetInsideHut = false;
   bool lastShotObstructed = false;
   int effectPoints = 0;
+  const core::TrainingRound* round = nullptr;
+  const char* levelName = "";
+  int sceneTriangles = 0;
+  int sceneDraws = 0;
+};
+
+struct RenderSettings {
+  bool nightVision = false;
+  bool brdf = true;
+  float roughness = 0.3F;
+  float metallic = 0.75F;
 };
 
 // Student-facing extension point for assignment-specific Dear ImGui controls.
@@ -32,9 +44,11 @@ class CustomUi {
   void drawContents(bool interactionDisabled);
 
   void setDiagnostics(const CameraDiagnostics& diagnostics);
+  RenderSettings& settings() { return settings_; }
 
  private:
   CameraDiagnostics diagnostics_;
+  RenderSettings settings_;
 };
 
 }  // namespace craft::app

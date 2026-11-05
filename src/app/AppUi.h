@@ -26,6 +26,7 @@ class AppUi {
 
   void setDiagnostics(const CameraDiagnostics& diagnostics);
   [[nodiscard]] bool wantsKeyboardInput() const;
+  RenderSettings& settings() { return customUi_.settings(); }
 
  private:
   [[nodiscard]] bool drawBenchmarkSection(
