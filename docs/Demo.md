@@ -47,6 +47,20 @@ the same GitHub URL instead of adding it again. Review any merge conflicts
 before proceeding. The official GitLab repository has not been updated by
 this personal demo work.
 
+## Verification on 5 November
+
+The Mac build passes all 73 test cases and 421 assertions. Tests cover course
+reachability, nearest-hit and wall occlusion, civilian interception, target
+health, win/failure rules, exposure resets and frame-size-independent timers.
+Separate code reviews are clean after fixing startup culling, elapsed-time
+handling and shot ordering at the time limit.
+
+Live checks reached a full course clear and player death, recorded a civilian
+penalty, and checked pause, restart, difficulty, night vision and the B-key
+benchmark. The CLI benchmark completed 240 samples at 1920 x 1080, with a mean
+of 0.7541 ms/frame for this scene. This is a baseline, not an optimisation
+comparison. The screenshot export was also opened and checked.
+
 ## Scope
 
 Current: custom courtyard, tactical targets and civilian models, health,

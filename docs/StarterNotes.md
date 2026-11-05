@@ -172,7 +172,7 @@ There are some recommended references for C++ and OpenGL learning you may find u
 
 ### C++ Basics
 
-- [Learn C++ Programming for Beginners – Free 31-Hour Course](https://www.freecodecamp.org/news/learn-c-with-free-31-hour-course/)
+- [Learn C++ Programming for Beginners, Free 31-Hour Course](https://www.freecodecamp.org/news/learn-c-with-free-31-hour-course/)
 - [Learn C++ from scratch: The complete guide for beginners](https://www.educative.io/blog/how-to-learn-cpp-the-guide-for-beginners)
 - [C++ Tutorial - Cplusplus.com](https://cplusplus.com/doc/tutorial/)
 - [C++ Tutorial - W3Schools](https://www.w3schools.com/cpp/)
